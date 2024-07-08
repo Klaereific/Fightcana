@@ -1,0 +1,4 @@
+repository "Fightcana@NotKlaere@cloud"
+  path "/"
+    br "/main"
+    co "/main"

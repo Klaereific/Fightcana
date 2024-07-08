@@ -62,9 +62,19 @@ public class CustomRigidbody2D
                 if(velocity.y < 0 && max.y > groundBounds.min.y && min.y < groundBounds.max.y)
                 {
                     position.y = groundBounds.max.y + size.y / 2;
+                    //Debug.Log(size);
                     velocity.y = 0;
                 }
             }
         }
+    }
+    public void SetScale(float width, float height)
+    {
+        size.x = width;
+        size.y = height;
+    }
+    public Vector2 GetScale()
+    {
+        return size;
     }
 }

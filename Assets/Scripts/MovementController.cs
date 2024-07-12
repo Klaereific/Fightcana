@@ -102,7 +102,7 @@ public class PlayerController : MonoBehaviour
             */
 
         }
-        if(!isDucked && Input.GetButton("Duck"))
+        if(!isDucked && Input.GetButton("Duck")&& isGrounded)
         {
             customRb.velocity.x = 0;
             Duck();
@@ -124,7 +124,8 @@ public class PlayerController : MonoBehaviour
         {
             customRb.velocity += Vector2.up * Physics2D.gravity.y * Time.deltaTime;
         }
-        Debug.Log(customRb.velocity.y);
+        // Debug.Log(customRb.velocity.y);
+
         // Update custom physics
         customRb.UpdatePhysics(Time.fixedDeltaTime);
 

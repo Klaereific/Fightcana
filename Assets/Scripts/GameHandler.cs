@@ -10,25 +10,27 @@ public class GameHandler : MonoBehaviour
     public event HealthChangedHandler OnHealthChanged;
 
     public GameObject player1;
-    [Serialize Field]
+    
+    [SerializeField]
     private int currentHealth;
     private int maxHealth = 100;
 
     public int testHeal = 5;
-    public int testDamage = 5;
+    public int testDamage = -5;
 
     public void ChangeHealth(int amount)
     {
-        float oldHealth = currentHealth;
+        Debug.Log(currentHealth);
+        int oldHealth = currentHealth;
         currentHealth += amount;
         currentHealth = Mathf.Clamp(currentHealth,0,maxHealth);
 
-        OnHealthChanged?.Invoke(player1,oldHealth,newHealth);
+        OnHealthChanged?.Invoke(player1,oldHealth,currentHealth);
     }
     // Start is called before the first frame update
     void Start()
     {
-        CurrentHealth = MaxHealth;
+        currentHealth = maxHealth;
     }
 
     // Update is called once per frame

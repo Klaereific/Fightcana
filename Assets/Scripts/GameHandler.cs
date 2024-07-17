@@ -20,7 +20,7 @@ public class GameHandler : MonoBehaviour
 
     public void ChangeHealth(int amount)
     {
-        Debug.Log(currentHealth);
+        Debug.Log(amount);
         int oldHealth = currentHealth;
         currentHealth += amount;
         currentHealth = Mathf.Clamp(currentHealth,0,maxHealth);
@@ -30,6 +30,8 @@ public class GameHandler : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Debug.Log(testHeal);
+        Debug.Log(testDamage);
         currentHealth = maxHealth;
     }
 
@@ -37,9 +39,11 @@ public class GameHandler : MonoBehaviour
     void Update()
     {
         if(Input.GetKeyDown(KeyCode.Q)){
+            Debug.Log("Q: "+testHeal);
             ChangeHealth(testHeal);
         }
         if(Input.GetKeyDown(KeyCode.E)){
+            Debug.Log("E: "+testDamage);
             ChangeHealth(testDamage);
         }
     }

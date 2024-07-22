@@ -10,7 +10,7 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Y))  // Example attack input
+        if (Input.GetKeyDown(KeyCode.F))  // Example attack input
         {
             Vector3 posOffset = new Vector3(0.5f, 0.5f);
             Debug.Log("Attack");

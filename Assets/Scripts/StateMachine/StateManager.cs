@@ -7,18 +7,18 @@ public abstract class StateManager<EState> : MonoBehaviour where EState : Enum
 
     protected Dictionary<EState,BaseState<EState>> States = new Dictionary<EState, BaseState<EState>>();
 
-    protected BaseState<EState> CurrentState;
+    public BaseState<EState> currentState{get; protected set;}
 
     protected bool isTransitioningState = false;
 
    void Start(){
-    CurrentState.EnterState();
+    currentState.EnterState();
    }
 
-   void Update(){
-    EState nextStateKey = CurrentState.GetNextState();
-    if(nextStateKey.Equals(CurrentState.StateKey)){
-        CurrentState.UpdateState();
+   void FixedUpdate(){
+    EState nextStateKey = currentState.GetNextState();
+    if(!isTransitioningState && nextStateKey.Equals(currentState.StateKey)){
+        currentState.UpdateState();
     } else if (!isTransitioningState) {
         TransitionToState(nextStateKey);
     }
@@ -27,21 +27,21 @@ public abstract class StateManager<EState> : MonoBehaviour where EState : Enum
    public void TransitionToState(EState stateKey)
    {
     isTransitioningState = true;
-    CurrentState.ExitState();
-    CurrentState = States[stateKey];
-    CurrentState.EnterState();
+    currentState.ExitState();
+    currentState = States[stateKey];
+    currentState.EnterState();
     isTransitioningState = false;    
    }
 
    void OnTriggerEnter(Collider other){
-    CurrentState.OnTriggerEnter(other);
+    currentState.OnTriggerEnter(other);
    }
 
    void OnTriggerStay(Collider other){
-    CurrentState.OnTriggerStay(other);
+    currentState.OnTriggerStay(other);
    }
 
    void OnTriggerExit(Collider other){
-    CurrentState.OnTriggerExit(other);
+    currentState.OnTriggerExit(other);
    }
 }

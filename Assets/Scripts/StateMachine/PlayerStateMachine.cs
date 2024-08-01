@@ -11,24 +11,36 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
         Jump
     }
 
-    [SerializeField] private CustomRigidbody2D customRb;
+    // [SerializeField] private CustomRigidbody2D customRb;
     [SerializeField] private float width;
     [SerializeField] private float height;
+    public float moveSpeed = 5.0f;
+    public float jumpForce = 10.0f;
+    public float lowJumpMultiplier = 2.0f;
+    public float fallMultiplier = 3.0f;
+    public float angledJump = 3.0f;
     
     private PlayerStateContext _context;
-
+    
     // Start is called before the first frame update
     void Awake()
     {
-        _context = new PlayerStateContext(customRb,width,height);
+        width = transform.localScale.x;
+        height = transform.localScale.y;
+        _context = new PlayerStateContext(width,height,moveSpeed,jumpForce,lowJumpMultiplier,fallMultiplier,angledJump,transform.position);
+        _context.groundCheck = transform.Find("GroundCheck");
+        
+
         InitializeStates();
+        currentState.EnterState();
 
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        currentState.UpdateState();
+        _context.customRb.UpdatePhysics(Time.fixedDeltaTime);
     }
 
     private void InitializeStates()
@@ -37,6 +49,6 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
         States.Add(EPlayerState.Walk, new Player_Walk(_context,EPlayerState.Walk));
         States.Add(EPlayerState.Duck, new Player_Duck(_context,EPlayerState.Duck));
         States.Add(EPlayerState.Jump, new Player_Jump(_context,EPlayerState.Jump));
-        CurrentState = States[EPlayerState.Idle];
+        currentState = States[EPlayerState.Idle];
     }
 }

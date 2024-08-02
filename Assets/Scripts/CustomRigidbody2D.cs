@@ -37,7 +37,6 @@ public class CustomRigidbody2D
 
         // Reset acceleration
         acceleration = Vector2.zero;
-
         DetectAndResolveCollisions();
     }
 

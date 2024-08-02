@@ -4,17 +4,45 @@ public class Player_Duck : PlayerState
 {
     public Player_Duck(PlayerStateContext context, PlayerStateMachine.EPlayerState estate) : base(context, estate)
     {
-        PlayerStateContext Context = context;
+        // PlayerStateContext Context = context;
     }
 
-    public override void EnterState() {}
-    public override void ExitState() {}
-    public override void UpdateState() {}
+    public override void EnterState() {
+        Debug.Log("Enter Ducked state");
+        Context.customRb.velocity.x = 0f;
+        Duck();
+        
+    }
+    public override void ExitState() {
+        Stand();
+        nextStateKey = PlayerStateMachine.EPlayerState.Duck;
+    }
+    public override void UpdateState() {
+        if (Input.GetAxis("MoveVertical")<0.5f)
+        {
+            nextStateKey = PlayerStateMachine.EPlayerState.Idle;
+        }
+    }
     public override PlayerStateMachine.EPlayerState GetNextState()
     {
-        return StateKey;
+        return nextStateKey;
     }
     public override void OnTriggerEnter(Collider other) {}
     public override void OnTriggerStay(Collider other) {}
     public override void OnTriggerExit(Collider other) {}
+    public void Duck()
+    {
+        float duckedheight = Context._height / 2;
+        Context.customRb.position = new Vector2(Context.playerTransform.position.x, Context.playerTransform.position.y - duckedheight / 2);
+        Context.customRb.SetScale(Context._width, duckedheight);
+        Context.playerTransform.localScale = new Vector2(Context._width, duckedheight);
+        
+    }
+    public void Stand()
+    {
+        Context.customRb.position = Context.playerTransform.position;
+        Context.customRb.SetScale(Context._width, Context._height);
+        Context.playerTransform.localScale = new Vector2(Context._width, Context._height);
+        
+    }
 }

@@ -49,6 +49,7 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
     }
     public void Update()
     {
+        
         if (Input.GetAxis("MoveVertical") < -0.5f)
         {
             _context.jumpRequest = true;

@@ -20,6 +20,11 @@ public class PlayerStateContext
     public float _width;
     public float _height;
 
+    public TimedQueue<string> button_queue;
+    public Vector2 vertMovement;
+    public Vector2 horzMovement;
+
+
     // Ground check
     public bool isGrounded;
 
@@ -45,6 +50,8 @@ public class PlayerStateContext
         _lowJumpMultiplier = lowJumpMultiplier;
         _fallMultiplier = fallMultiplier;
         _angledJump = angledJump;
+        button_queue = new TimedQueue<string>(10,1.0f);
+
     }
 
     public CustomRigidbody2D Rigidbody => customRb;

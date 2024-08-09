@@ -2,11 +2,11 @@ using UnityEngine;
 
 public class Player_Walk : PlayerState
 {
-    PlayerStateMachine.EPlayerState nextStateKey;
+    //PlayerStateMachine.EPlayerState nextStateKey;
     public Player_Walk(PlayerStateContext context, PlayerStateMachine.EPlayerState StateKey) : base(context, StateKey)
     {
-        PlayerStateContext Context = context;
-        nextStateKey = StateKey;
+        //PlayerStateContext Context = context;
+        //nextStateKey = StateKey;
     }
 
     public override void EnterState() {
@@ -18,12 +18,16 @@ public class Player_Walk : PlayerState
     public override void UpdateState() {
         float moveInput = Input.GetAxisRaw("Horizontal");
         Context.customRb.velocity.x = moveInput * Context._moveSpeed;
-        Debug.Log("MoveSpeed");
-        Debug.Log(Context._moveSpeed);
-        Debug.Log("Velocity");
-        Debug.Log(Context.customRb.velocity.x);
         if(moveInput==0f){
             nextStateKey = PlayerStateMachine.EPlayerState.Idle;
+        }
+        if (Context.jumpRequest)
+        {
+            nextStateKey = PlayerStateMachine.EPlayerState.Jump;
+        }
+        if (Input.GetButtonDown("Duck"))
+        {
+            nextStateKey = PlayerStateMachine.EPlayerState.Duck;
         }
     }
     public override PlayerStateMachine.EPlayerState GetNextState()

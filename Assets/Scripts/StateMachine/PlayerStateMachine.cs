@@ -20,6 +20,7 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
     public float fallMultiplier = 3.0f;
     public float angledJump = 3.0f;
     
+    
     private PlayerStateContext _context;
     
     // Start is called before the first frame update
@@ -27,7 +28,7 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
     {
         width = transform.localScale.x;
         height = transform.localScale.y;
-        _context = new PlayerStateContext(width,height,moveSpeed,jumpForce,lowJumpMultiplier,fallMultiplier,angledJump,transform.position);
+        _context = new PlayerStateContext(width,height,moveSpeed,jumpForce,lowJumpMultiplier,fallMultiplier,angledJump,transform.position,this.transform);
         _context.groundCheck = transform.Find("GroundCheck");
         
 
@@ -37,10 +38,21 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
     }
 
     // Update is called once per frame
-    void Update()
+    public override void FixedUpdate()
     {
-        currentState.UpdateState();
+        base.FixedUpdate();
         _context.customRb.UpdatePhysics(Time.fixedDeltaTime);
+        transform.position = _context.customRb.position;
+        currentState.UpdateState();
+        Debug.Log(Input.GetAxis("MoveVertical"));
+        
+    }
+    public void Update()
+    {
+        if (Input.GetAxis("MoveVertical") < -0.5f)
+        {
+            _context.jumpRequest = true;
+        }
     }
 
     private void InitializeStates()

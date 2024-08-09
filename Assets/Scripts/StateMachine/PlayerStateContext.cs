@@ -15,9 +15,10 @@ public class PlayerStateContext
     public LayerMask groundLayer;
 
     // Initialize custom Rigidbody class member for the player
+    private GameObject player;
     public CustomRigidbody2D customRb;
-    private float _width;
-    private float _height;
+    public float _width;
+    public float _height;
 
     // Ground check
     public bool isGrounded;
@@ -26,15 +27,17 @@ public class PlayerStateContext
 
     // groundCheck circle 
     public Transform groundCheck;
+    public Transform playerTransform;
     private float groundCheckRadius = 0.2f;
     
     // Jump request to queue input
-    private bool jumpRequest = false;
+    public bool jumpRequest = false;
 
-    public PlayerStateContext(float width,float height,float moveSpeed,float jumpForce,float lowJumpMultiplier, float fallMultiplier, float angledJump, Vector3 position )
+    public PlayerStateContext(float width,float height,float moveSpeed,float jumpForce,float lowJumpMultiplier, float fallMultiplier, float angledJump, Vector3 position,Transform playertransform)
     {
         customRb = new CustomRigidbody2D(width,height);
         customRb.position = position;
+        playerTransform = playertransform;
         _width = width;
         _height = height;
         _moveSpeed = moveSpeed;

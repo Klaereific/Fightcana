@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Hitbox : MonoBehaviour
 {
-    public int damage = 10;  // Damage dealt to the player
+    public float damage = 10f;  // Damage dealt to the player
     private bool hasDamagedPlayer = false;
 
     private void OnTriggerEnter2D(Collider2D collision)

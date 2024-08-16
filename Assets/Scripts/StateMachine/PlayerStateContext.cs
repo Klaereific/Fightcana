@@ -15,15 +15,18 @@ public class PlayerStateContext
     public LayerMask groundLayer;
 
     // Initialize custom Rigidbody class member for the player
-    private GameObject player;
+    // private GameObject player;
+
+
     public CustomRigidbody2D customRb;
     public float _width;
     public float _height;
 
-    public TimedQueue<string> button_queue;
+    public TimedQueue<PlayerStateMachine.Buttons> button_queue;
     public Vector2 vertMovement;
     public Vector2 horzMovement;
 
+    public string _movementState;
 
     // Ground check
     public bool isGrounded;
@@ -32,30 +35,41 @@ public class PlayerStateContext
 
     // groundCheck circle 
     public Transform groundCheck;
+
     public Transform playerTransform;
     private float groundCheckRadius = 0.2f;
     
     // Jump request to queue input
     public bool jumpRequest = false;
 
-    public PlayerStateContext(float width,float height,float moveSpeed,float jumpForce,float lowJumpMultiplier, float fallMultiplier, float angledJump, Vector3 position,Transform playertransform)
+    public CharacterParameters _p1_CP;
+
+    public GameObject _hitboxPrefab;
+
+    public PlayerStateContext(float width,float height,float moveSpeed,float jumpForce,float lowJumpMultiplier, float fallMultiplier, float angledJump,Transform playertransform,GameObject hitboxPref)
     {
-        customRb = new CustomRigidbody2D(width,height);
-        customRb.position = position;
         playerTransform = playertransform;
-        _width = width;
-        _height = height;
+        _width = playerTransform.localScale.x;
+        _height = playerTransform.localScale.y;
+        customRb = new CustomRigidbody2D(_width, _height);
+        customRb.position = playerTransform.position;
+        
+ 
+        _movementState = "Idle";
         _moveSpeed = moveSpeed;
         _jumpForce = jumpForce;
         _lowJumpMultiplier = lowJumpMultiplier;
         _fallMultiplier = fallMultiplier;
         _angledJump = angledJump;
-        button_queue = new TimedQueue<string>(10,1.0f);
+        _p1_CP = new CharacterParameters(2f, _moveSpeed, new Vector2(width, height));
+        _hitboxPrefab = hitboxPref;
+        button_queue = new TimedQueue<PlayerStateMachine.Buttons>(10,1.0f,0.1f); // args: capacity, expiration time, exp time check timer
 
     }
 
     public CustomRigidbody2D Rigidbody => customRb;
     public float Width => _width;
     public float Height => _height;
+
 
 }

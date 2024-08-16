@@ -16,6 +16,7 @@ public class Player_Jump : PlayerState
         float moveInput = Input.GetAxis("MoveHorizontal");
         startHeight = Context.customRb.position.y;
         isFalling = false;
+        Context._movementState = "Jumping";
         Jump(moveInput, Context);
         //Context.jumpRequest = false;
         

@@ -12,6 +12,7 @@ public class Player_Idle : PlayerState
     public override void EnterState() {
         Debug.Log("Enter Idle state");
         Context.customRb.velocity.x = 0f;
+        Context._movementState = "Idle";
     }
     public override void ExitState() {
         nextStateKey = PlayerStateMachine.EPlayerState.Idle;
@@ -30,6 +31,10 @@ public class Player_Idle : PlayerState
         if (Input.GetAxis("MoveVertical") > 0.5f)
         {
             nextStateKey = PlayerStateMachine.EPlayerState.Duck;
+        }
+        if(Context.button_queue.Count > 0)
+        {
+            nextStateKey = PlayerStateMachine.EPlayerState.Attacking;
         }
     }
     public override PlayerStateMachine.EPlayerState GetNextState()

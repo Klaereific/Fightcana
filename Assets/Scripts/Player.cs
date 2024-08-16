@@ -6,7 +6,7 @@ public class Player : MonoBehaviour
     public GameObject hitboxPrefab;  // Reference to the hitbox prefab
                                      // public Transform hitboxSpawnPoint;  // The position where the hitbox should spawn
 
-    public int health = 100;
+    public float health = 100;
 
     private void Update()
     {
@@ -31,7 +31,7 @@ public class Player : MonoBehaviour
     
 
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(float damage)
     {
         health -= damage;
         health = Mathf.Clamp(health, 0, 100);

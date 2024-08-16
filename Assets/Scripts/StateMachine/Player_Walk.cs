@@ -11,13 +11,18 @@ public class Player_Walk : PlayerState
 
     public override void EnterState() {
          Debug.Log("Enter Walk state");
+
+        Context._movementState = "Walking";
     }
     public override void ExitState() {
         nextStateKey = PlayerStateMachine.EPlayerState.Walk;
     }
     public override void UpdateState() {
         float moveInput = Input.GetAxisRaw("Horizontal");
-        Context.customRb.velocity.x = moveInput * Context._moveSpeed;
+        int direction = 0;
+        if(moveInput > 0) { direction = 1; }
+        else if (moveInput < 0) { direction = -1; }
+        Context.customRb.velocity.x = direction * Context._moveSpeed;
         if(moveInput==0f){
             nextStateKey = PlayerStateMachine.EPlayerState.Idle;
         }

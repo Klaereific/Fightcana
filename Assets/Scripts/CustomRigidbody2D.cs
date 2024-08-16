@@ -14,6 +14,7 @@ public class CustomRigidbody2D
 
     public CustomRigidbody2D(float size_x,float size_y)
     {
+        
         size.x=size_x;
         size.y=size_y;
     }

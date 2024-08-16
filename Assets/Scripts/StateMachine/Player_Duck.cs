@@ -10,6 +10,7 @@ public class Player_Duck : PlayerState
     public override void EnterState() {
         Debug.Log("Enter Ducked state");
         Context.customRb.velocity.x = 0f;
+        Context._movementState = "Ducked";
         Duck();
         
     }

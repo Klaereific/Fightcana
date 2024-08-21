@@ -401,10 +401,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 615410741e0374345b7eff0b1d32b467, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player1: {fileID: 1490718935}
-  currentHealth: 0
-  testHeal: 5
-  testDamage: -5
+  player1: {fileID: 1490718941}
+  player2: {fileID: 1014693812}
+  currentHealth_p1: 0
 --- !u!4 &864591813
 Transform:
   m_ObjectHideFlags: 0
@@ -435,7 +434,7 @@ GameObject:
   - component: {fileID: 1014693812}
   m_Layer: 0
   m_Name: Dummy
-  m_TagString: Dummy
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -452,7 +451,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79017848585864f4cbf1f05b1cbf61d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitboxPrefab: {fileID: 3803666413519418204, guid: 878b39029e0fa1e4192a2d5eea2c8f67, type: 3}
   health: 100
 --- !u!61 &1014693814
 BoxCollider2D:
@@ -668,7 +666,7 @@ GameObject:
   - component: {fileID: 1490718938}
   - component: {fileID: 1490718937}
   - component: {fileID: 1490718936}
-  - component: {fileID: 1490718940}
+  - component: {fileID: 1490718941}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -817,7 +815,7 @@ Transform:
   - {fileID: 1979002665}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: -0.306, y: 0, z: 0}
---- !u!114 &1490718940
+--- !u!114 &1490718941
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -826,18 +824,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1490718935}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d282aca9fe822944fb7db9edf1115445, type: 3}
+  m_Script: {fileID: 11500000, guid: 79017848585864f4cbf1f05b1cbf61d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 0
-  height: 0
-  moveSpeed: 5
-  jumpForce: 10
-  lowJumpMultiplier: 2
-  fallMultiplier: 3
-  angledJump: 3
-  hitboxPrefab: {fileID: 0}
-  player: {fileID: 0}
+  health: 0
 --- !u!1 &1979002663
 GameObject:
   m_ObjectHideFlags: 0
@@ -875,6 +865,7 @@ MonoBehaviour:
   fallMultiplier: 3
   angledJump: 3
   hitboxPrefab: {fileID: 3803666413519418204, guid: 878b39029e0fa1e4192a2d5eea2c8f67, type: 3}
+  playerGO: {fileID: 0}
   player: {fileID: 0}
 --- !u!4 &1979002665
 Transform:

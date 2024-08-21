@@ -15,6 +15,7 @@ public class CharacterParameters
         _weight = weight;
         _walkspeed = walkspeed;
         _size = size;
+
         attackDict.Add("idle_light", new Attack(new Vector2(0.5f, 0f), new Vector2(0.5f, 0.3f), 2f, 10, 20, 10));
         attackDict.Add("test", new Attack(new Vector2(0.0f, 0f), new Vector2(0.2f, 0.1f), 2f, 5, 5, 5));
     }

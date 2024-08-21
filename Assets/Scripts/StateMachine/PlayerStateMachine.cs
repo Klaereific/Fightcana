@@ -38,16 +38,17 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
 
     public PlayerControls _controls;
 
-    public GameObject player;
+    public GameObject playerGO;
+    public Player player;
     
     // Start is called before the first frame update
     void Awake()
     {
-        player = GameObject.Find("Player");
-
-        width = player.transform.localScale.x;
-        height = player.transform.localScale.y;
-        _context = new PlayerStateContext(width, height, moveSpeed, jumpForce, lowJumpMultiplier,fallMultiplier,angledJump,player.transform,hitboxPrefab);
+        playerGO = GameObject.Find("Player");
+        player = playerGO.GetComponent<Player>();
+        width = playerGO.transform.localScale.x;
+        height = playerGO.transform.localScale.y;
+        _context = new PlayerStateContext(player, moveSpeed, jumpForce, lowJumpMultiplier,fallMultiplier,angledJump, playerGO.transform,hitboxPrefab);
         _context.groundCheck = transform.Find("GroundCheck");
         
         _controls = new PlayerControls();
@@ -65,7 +66,7 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
     {
         base.FixedUpdate();
         _context.customRb.UpdatePhysics(Time.fixedDeltaTime);
-        transform.position = _context.customRb.position;
+        playerGO.transform.position = _context.customRb.position;
         currentState.UpdateState();
         //Debug.Log(Input.GetAxis("MoveVertical"));
 
@@ -124,13 +125,14 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
         */
     }
 
-    public static void SpawnHitbox(GameObject hitboxPrefab,Vector3 position, Quaternion rotation, Vector2 size, float damage, float duration, Color color)
+    public static void SpawnHitbox(GameObject hitboxPrefab,Player player,Vector3 position, Quaternion rotation, Vector2 size, float damage, float duration, Color color)
     {
         Debug.Log("Hitbox spawned");
         GameObject hitbox = Instantiate(hitboxPrefab, position, rotation);
         hitbox.transform.localScale = size;
         hitbox.GetComponent<SpriteRenderer>().color = color;
         hitbox.GetComponent<Hitbox>().damage = damage;  // Set the damage value if needed
+        hitbox.GetComponent<Hitbox>().sourcePlayer = player;
         Destroy(hitbox, duration);  // Destroy the hitbox after 0.5 seconds to simulate attack duration
     }
 

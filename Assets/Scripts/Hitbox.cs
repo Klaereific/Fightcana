@@ -4,13 +4,16 @@ public class Hitbox : MonoBehaviour
 {
     public float damage = 10f;  // Damage dealt to the player
     private bool hasDamagedPlayer = false;
+    public Player sourcePlayer;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (!hasDamagedPlayer && collision.gameObject.CompareTag("Dummy"))
+        Debug.Log("Collision");
+        if (!hasDamagedPlayer && collision.gameObject.CompareTag("Player"))
         {
             Player player = collision.GetComponent<Player>();
-            if (player != null)
+
+            if (player != null && player != sourcePlayer)
             {
                 player.TakeDamage(damage);
                 hasDamagedPlayer = true;
@@ -20,7 +23,7 @@ public class Hitbox : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("Dummy"))
+        if (collision.gameObject.CompareTag("Player"))
         {
             hasDamagedPlayer = false;  // Reset the flag when the player leaves the hitbox
         }

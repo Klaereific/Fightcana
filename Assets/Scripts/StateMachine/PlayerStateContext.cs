@@ -46,22 +46,24 @@ public class PlayerStateContext
 
     public GameObject _hitboxPrefab;
 
-    public PlayerStateContext(float width,float height,float moveSpeed,float jumpForce,float lowJumpMultiplier, float fallMultiplier, float angledJump,Transform playertransform,GameObject hitboxPref)
+    public Player _player;
+
+    public PlayerStateContext(Player player,float moveSpeed,float jumpForce,float lowJumpMultiplier, float fallMultiplier, float angledJump, Transform playertransform,GameObject hitboxPref)
     {
         playerTransform = playertransform;
         _width = playerTransform.localScale.x;
         _height = playerTransform.localScale.y;
         customRb = new CustomRigidbody2D(_width, _height);
         customRb.position = playerTransform.position;
-        
- 
+
+        _player = player;
         _movementState = "Idle";
         _moveSpeed = moveSpeed;
         _jumpForce = jumpForce;
         _lowJumpMultiplier = lowJumpMultiplier;
         _fallMultiplier = fallMultiplier;
         _angledJump = angledJump;
-        _p1_CP = new CharacterParameters(2f, _moveSpeed, new Vector2(width, height));
+        _p1_CP = new CharacterParameters(2f, _moveSpeed, new Vector2(_width, _height));
         _hitboxPrefab = hitboxPref;
         button_queue = new TimedQueue<PlayerStateMachine.Buttons>(10,1.0f,0.1f); // args: capacity, expiration time, exp time check timer
 

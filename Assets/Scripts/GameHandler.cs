@@ -6,45 +6,37 @@ using UnityEngine.Events;
 
 public class GameHandler : MonoBehaviour
 {
-    public delegate void HealthChangedHandler(object source, int oldHealth, int newHealth);
+    public delegate void HealthChangedHandler(object source, Player player, float oldHealth, float newHealth);
     public event HealthChangedHandler OnHealthChanged;
-
-    public GameObject player1;
+   
     
+
+    public Player player1;
+    public Player player2;
+
     [SerializeField]
-    private int currentHealth;
+    private int currentHealth_p1;
+    private int currentHealth_p2;
     private int maxHealth = 100;
 
-    public int testHeal = 5;
-    public int testDamage = -5;
 
-    public void ChangeHealth(int amount)
+    public void ChangeHealth(Player player, int amount)
     {
         Debug.Log(amount);
-        int oldHealth = currentHealth;
+        float currentHealth = player.health;
+        float oldHealth = player.health;
         currentHealth += amount;
         currentHealth = Mathf.Clamp(currentHealth,0,maxHealth);
 
-        OnHealthChanged?.Invoke(player1,oldHealth,currentHealth);
+        OnHealthChanged?.Invoke(this,player, oldHealth,currentHealth);
+     
     }
     // Start is called before the first frame update
-    void Start()
-    {
-        Debug.Log(testHeal);
-        Debug.Log(testDamage);
-        currentHealth = maxHealth;
-    }
 
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Q)){
-            Debug.Log("Q: "+testHeal);
-            ChangeHealth(testHeal);
-        }
-        if(Input.GetKeyDown(KeyCode.E)){
-            Debug.Log("E: "+testDamage);
-            ChangeHealth(testDamage);
-        }
+        //Debug.Log(player1.health);
+        //Debug.Log(player2.health);
     }
 }

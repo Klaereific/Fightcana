@@ -44,14 +44,14 @@ public class Player_Attacking : PlayerState
     {
         frame_count += 1;
         if (frame_count == 1) {
-            PlayerStateMachine.SpawnHitbox(Context._hitboxPrefab, Context.customRb.position + position, Context.playerTransform.rotation, size, 0, startup / 60f, Color.blue);
+            PlayerStateMachine.SpawnHitbox(Context._hitboxPrefab, Context._player, Context.customRb.position + position, Context.playerTransform.rotation, size, 0, startup / 60f, Color.blue);
         }
         if (frame_count == (startup + 1)) {
-            PlayerStateMachine.SpawnHitbox(Context._hitboxPrefab, Context.customRb.position + position, Context.playerTransform.rotation, size, 0, duration / 60f, Color.red);
+            PlayerStateMachine.SpawnHitbox(Context._hitboxPrefab, Context._player, Context.customRb.position + position, Context.playerTransform.rotation, size, damage, duration / 60f, Color.red);
         }
         if (frame_count == (duration + startup + 1))
         {
-            PlayerStateMachine.SpawnHitbox(Context._hitboxPrefab, Context.customRb.position + position, Context.playerTransform.rotation, size, 0, recovery / 60f, Color.grey);
+            PlayerStateMachine.SpawnHitbox(Context._hitboxPrefab, Context._player, Context.customRb.position + position, Context.playerTransform.rotation, size, 0, recovery / 60f, Color.grey);
         }
         if(frame_count > (startup + duration + recovery))
         {

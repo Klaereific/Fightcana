@@ -5,9 +5,10 @@ public class Player : MonoBehaviour
 
     
     public float health;
-
+    public bool x_axis_blocked=false;
+    public bool rev = false;
     
-    private void Start()
+    private void Awake()
     {
         health = 100f;
     }

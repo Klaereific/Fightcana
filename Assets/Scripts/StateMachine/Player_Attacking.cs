@@ -35,6 +35,10 @@ public class Player_Attacking : PlayerState
         position = attack._position;
         size = attack._size;
         damage = attack._damage;
+        if (Context._player.rev)
+        {
+            position.x *= -1;
+        }
     }
     public override void ExitState()
     {

@@ -27,8 +27,9 @@ public class Player_Attacking : PlayerState
     {
         Debug.Log("Enter Attack state");
         frame_count = 0;
-        button = Context.button_queue.Dequeue();
-        Attack attack = evaluateButton(button);
+        // button = Context.button_queue.Dequeue();
+        // Attack attack = evaluateButton(button);
+        Attack attack = evaluateButtons(Context.button_queue);
         startup = attack._startup;
         duration = attack._duration;
         recovery = attack._recovery;
@@ -71,8 +72,9 @@ public class Player_Attacking : PlayerState
     public override void OnTriggerStay(Collider other) { }
     public override void OnTriggerExit(Collider other) { }
 
-    private Attack evaluateButton(PlayerStateMachine.Buttons button)
+    private Attack evaluateButton(TimedQueue button_queue)
     {
+
         if (button == PlayerStateMachine.Buttons.light_attack)
         {
             return (Context._p1_CP.attackDict["idle_light"]);

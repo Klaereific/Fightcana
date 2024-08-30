@@ -18,9 +18,18 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
         light_attack,
         medium_attack,
         heavy_attack,
-        special_attack,
-        dash,
-
+        special_attack
+    }
+    public enum MovementButtons
+    {
+        Forward,
+        Forward_Down,
+        Down,
+        Backward_Down,
+        Backward,
+        Backward_Up,
+        Up,
+        Forward_Up
     }
 
     // [SerializeField] private CustomRigidbody2D customRb;

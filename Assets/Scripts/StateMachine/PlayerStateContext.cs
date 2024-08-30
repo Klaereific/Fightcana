@@ -65,8 +65,9 @@ public class PlayerStateContext
         _angledJump = angledJump;
         _p1_CP = new CharacterParameters(2f, _moveSpeed, new Vector2(_width, _height));
         _hitboxPrefab = hitboxPref;
-        button_queue = new TimedQueue<PlayerStateMachine.Buttons>(10,1.0f,0.1f); // args: capacity, expiration time, exp time check timer
 
+        button_queue = new TimedQueue<PlayerStateMachine.Buttons>(10,60,60); // args: capacity, expiration time, exp time check timer
+        movement_queue = new TimedQueue<PlayerStateMachine.MovementButtons>(10,60,60);
     }
 
     public CustomRigidbody2D Rigidbody => customRb;

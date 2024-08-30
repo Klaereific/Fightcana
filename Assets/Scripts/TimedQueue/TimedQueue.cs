@@ -11,11 +11,14 @@ public class TimedQueue<T>
     private Timer timer;
     public int Count;
 
-    public TimedQueue(int capacity, double expirationSeconds, double checkIntervalSeconds = 1.0)
+    public TimedQueue(int capacity, int expirationFrames, int checkIntervalFrames = 60)
     {
+
         queue = new Queue<TimedQueueElement<T>>(capacity);
-        expirationTime = TimeSpan.FromSeconds(expirationSeconds);
-        timer = new Timer(RemoveExpiredElements, null, TimeSpan.Zero, TimeSpan.FromSeconds(checkIntervalSeconds));
+        int expirationTicks = expirationFrames * 166666;
+        int checkIntervalTicks = checkIntervalFrames * 166666;
+        expirationTime = TimeSpan.FromTicks(expirationTicks);
+        timer = new Timer(RemoveExpiredElements, null, TimeSpan.Zero, TimeSpan.FromTicks(checkIntervalTicks));
         Count = 0;
     }
 

@@ -23,6 +23,7 @@ public class PlayerStateContext
     public float _height;
 
     public TimedQueue<PlayerStateMachine.Buttons> button_queue;
+    public TimedQueue<PlayerStateMachine.MovementButtons> movement_queue;
     public Vector2 vertMovement;
     public Vector2 horzMovement;
 

@@ -12,7 +12,7 @@ public class Player_Walk : PlayerState
     }
 
     public override void EnterState() {
-         Debug.Log("Enter Walk state");
+         //Debug.Log("Enter Walk state");
 
         Context._movementState = "Walking";
         _rev = Context._player.rev;
@@ -25,7 +25,7 @@ public class Player_Walk : PlayerState
         float moveInput = Input.GetAxisRaw("Horizontal");
         int direction = 0;
         _x_axis_blocked = Context._player.x_axis_blocked;
-        Debug.Log(!(moveInput < 0 && !_rev && _x_axis_blocked));
+        //Debug.Log(!(moveInput < 0 && !_rev && _x_axis_blocked));
         if (moveInput > 0) { direction = 1; }
         else if (moveInput < 0) { direction = -1; }
         if (!(moveInput > 0 && _rev && _x_axis_blocked) && !(moveInput < 0 && !_rev && _x_axis_blocked))

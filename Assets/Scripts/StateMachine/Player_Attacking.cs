@@ -25,7 +25,7 @@ public class Player_Attacking : PlayerState
 
     public override void EnterState()
     {
-        Debug.Log("Enter Attack state");
+        //Debug.Log("Enter Attack state");
         frame_count = 0;
         // button = Context.button_queue.Dequeue();
         // Attack attack = evaluateButton(button);

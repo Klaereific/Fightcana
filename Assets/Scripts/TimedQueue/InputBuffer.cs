@@ -4,48 +4,67 @@ using UnityEngine;
 
 public class InputBuffer : MonoBehaviour
 {
-    private byte[,] buffer;
-    System.Timers.Timer timer = new(interval: (1 / 60 * 1000));
+    private CircularBuffer<byte[,]> buffer;
+    private System.Timers.Timer timer;
     private byte inputByte;
-    private Player _player;
+    public Player _player;
     private int bufferRow;
     private int bufferRow_prev;
     int n;
+    private Coroutine bufferCoroutine;
     // Start is called before the first frame update
-    public InputBuffer(int size, Player player)
+    public void InitializeBuffer(int size, Player player)
     {
-        n = size;
-        buffer = new byte[size, 3];
-        timer.Elapsed += (sender, e) => SFT();
         _player = player;
-        bufferRow_prev = 0;
-        bufferRow = 1;
+        //timer = new System.Timers.Timer(17);
+        buffer = new CircularBuffer<byte[,]>(size);
+        byte[,] empty_in = new byte[1, 3];
+        buffer.Enqueue(empty_in);
+        //timer.AutoReset = true;
+        //timer.Elapsed += (sender, e) => SFT();
+        
     }
     public void StartBuffer()
     {
-        timer.Start();
+        bufferCoroutine = StartCoroutine(BufferRoutine());
+        //timer.Start();
+        Debug.Log("Start Buffer");
     }
 
     public void StopBuffer()
     {
-        timer.Dispose();
+        if (bufferCoroutine != null)
+        {
+            StopCoroutine(bufferCoroutine);
+            bufferCoroutine = null;
+        }
+        //timer.Dispose();
     }
-    
+
+    private IEnumerator BufferRoutine()
+    {
+        while (true)
+        {
+            SFT();
+            yield return new WaitForSeconds(0.017f); // 17ms interval
+        }
+    }
+
     private void SFT()
     {
+        //Debug.Log("SFT");
+        
         inputByte = _player.GetInput();
+        Debug.Log(inputByte);
+        //Debug.Log("SFT");
         UpdateBuffer(inputByte);
-        bufferRow_prev++;
-        bufferRow++;
-        if (bufferRow_prev == n) { bufferRow_prev = 0; }
-        if (bufferRow == n) { bufferRow = 0; }
-
     }
 
     private void UpdateBuffer(byte inputByte)
     {
-        byte press_prev = buffer[bufferRow_prev, 1];
-        byte hold_prev = buffer[bufferRow_prev, 2];
+        //Debug.Log("UpdateBuffer");
+        byte press_prev = buffer.Peek()[0,0];
+        byte hold_prev = buffer.Peek()[0,1];
         
         byte press = 0;
         byte hold = 0;
@@ -76,15 +95,21 @@ public class InputBuffer : MonoBehaviour
                 }
             }
         }
-        buffer[bufferRow, 1] = press;
-        buffer[bufferRow, 2] = hold;
-        buffer[bufferRow, 3] = rel;
+        byte[,] input = new byte[1, 3];
+        input[0, 0] = press;
+        input[0, 1] = hold;
+        input[0, 2] = rel;
+        buffer.Enqueue(input);
+        if ((int)inputByte != 0)
+        {
+            getBuffer();
+        }
 
     }
 
-    public byte[,] getBuffer()
+    public void getBuffer()
     {
-        return buffer;
+        Debug.Log(buffer.ReturnBufferArray()[0]);
     }
     
 

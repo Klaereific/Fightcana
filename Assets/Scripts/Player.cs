@@ -39,7 +39,7 @@ public class Player : MonoBehaviour
         if (Input.GetAxis("MoveHorizontal") > 0.5f) input |= 0b00000010; // Move right
         if (Input.GetAxis("MoveVertical") < -0.5f) input |= 0b00000001; // Move down
         
-        Debug.Log(input);
+        //Debug.Log(input);
         return (byte)input;
         
     }

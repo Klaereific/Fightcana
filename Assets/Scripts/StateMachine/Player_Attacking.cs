@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using System.Collections.Generic;
 public class Player_Attacking : PlayerState
 {
     //PlayerStateMachine.EPlayerState nextStateKey; 
@@ -14,6 +14,8 @@ public class Player_Attacking : PlayerState
     float damage;
     int frame_count;
 
+    
+
     PlayerStateMachine.Buttons button;
 
     public Player_Attacking(PlayerStateContext context, PlayerStateMachine.EPlayerState StateKey) : base(context, StateKey)
@@ -25,11 +27,11 @@ public class Player_Attacking : PlayerState
 
     public override void EnterState()
     {
-        //Debug.Log("Enter Attack state");
+        Debug.Log("Enter Attack state");
         frame_count = 0;
         // button = Context.button_queue.Dequeue();
         // Attack attack = evaluateButton(button);
-        Attack attack = EvaluateButtons(Context.button_queue);
+        Attack attack = EvaluateButtons1(Context._buffer);
         startup = attack._startup;
         duration = attack._duration;
         recovery = attack._recovery;
@@ -72,17 +74,44 @@ public class Player_Attacking : PlayerState
     public override void OnTriggerStay(Collider other) { }
     public override void OnTriggerExit(Collider other) { }
 
-    private Attack EvaluateButtons(TimedQueue<PlayerStateMachine.Buttons> button_queue)
+    private Attack EvaluateButtons1(InputBuffer buffer)
     {
-
-        if (button == PlayerStateMachine.Buttons.light_attack)
+        byte[][] bufferarray = buffer.GetBufferArray();
+        int tail = buffer.n - 1;
+        if((bufferarray[tail][0] | 0b1000000)!=0)
         {
-            return (Context._p1_CP.attackDict["idle_light"]);
+            KeyValuePair<string, Attack>  attack = EvaluateButtons2(bufferarray, Context._p1_CP.gWest_attackDict, tail);
+            Debug.Log(attack.Key);
+            return (attack.Value);
         }
         else
         {
-            return (Context._p1_CP.attackDict["test"]);
+            return (new Attack());
         }
     }
-
+    private KeyValuePair<string, Attack> EvaluateButtons2(byte[][] buffer, Dictionary<string,Attack> attackDict, int tail)
+    {
+        
+        foreach(KeyValuePair<string, Attack> entry in attackDict)
+        {
+            Attack attack = entry.Value;
+            byte cur_pat = 0;
+            int pat_len = attack._inputs.Length;
+            int tol_f = 0;
+            for(int i = tail-attack._inputWindow; i <= tail; i++)
+            {
+                if(tol_f == 0) { cur_pat = 0; }
+                if((buffer[i][0] & attack._inputs[cur_pat]) != 0) {
+                    tol_f = attack._inputTolerance;
+                    cur_pat ++;
+                    if (cur_pat == pat_len) { return (entry); }
+                }
+                if (tol_f != 0) { tol_f--; }
+                
+            }
+        }
+        Debug.Log("Empty path");
+        return (new KeyValuePair<string,Attack> ("empty",new Attack(0, 1, new byte[1] { 0b00000000 }, new Vector2(0.5f, 0f), new Vector2(0.5f, 0.3f), 2f, 1, 1, 1)));
+        
+    }
 }

@@ -4,22 +4,23 @@ using UnityEngine;
 
 public class InputBuffer : MonoBehaviour
 {
-    private CircularBuffer<byte[,]> buffer;
+    private CircularBuffer<byte[]> buffer;
     private System.Timers.Timer timer;
     private byte inputByte;
     public Player _player;
     private int bufferRow;
     private int bufferRow_prev;
-    int n;
+    public int n;
     private Coroutine bufferCoroutine;
     // Start is called before the first frame update
     public void InitializeBuffer(int size, Player player)
     {
         _player = player;
         //timer = new System.Timers.Timer(17);
-        buffer = new CircularBuffer<byte[,]>(size);
-        byte[,] empty_in = new byte[1, 3];
+        buffer = new CircularBuffer<byte[]>(size);
+        byte[] empty_in = new byte[3];
         buffer.Enqueue(empty_in);
+        n = size;
         //timer.AutoReset = true;
         //timer.Elapsed += (sender, e) => SFT();
         
@@ -27,6 +28,7 @@ public class InputBuffer : MonoBehaviour
     public void StartBuffer()
     {
         bufferCoroutine = StartCoroutine(BufferRoutine());
+        Debug.Log(bufferCoroutine != null);
         //timer.Start();
         Debug.Log("Start Buffer");
     }
@@ -46,7 +48,7 @@ public class InputBuffer : MonoBehaviour
         while (true)
         {
             SFT();
-            yield return new WaitForSeconds(0.017f); // 17ms interval
+            yield return new WaitForSeconds(0.0167f); // 17ms interval
         }
     }
 
@@ -55,7 +57,7 @@ public class InputBuffer : MonoBehaviour
         //Debug.Log("SFT");
         
         inputByte = _player.GetInput();
-        Debug.Log(inputByte);
+        //Debug.Log(inputByte);
         //Debug.Log("SFT");
         UpdateBuffer(inputByte);
     }
@@ -63,8 +65,8 @@ public class InputBuffer : MonoBehaviour
     private void UpdateBuffer(byte inputByte)
     {
         //Debug.Log("UpdateBuffer");
-        byte press_prev = buffer.Peek()[0,0];
-        byte hold_prev = buffer.Peek()[0,1];
+        byte press_prev = buffer.Peek()[0];
+        byte hold_prev = buffer.Peek()[1];
         
         byte press = 0;
         byte hold = 0;
@@ -95,21 +97,32 @@ public class InputBuffer : MonoBehaviour
                 }
             }
         }
-        byte[,] input = new byte[1, 3];
-        input[0, 0] = press;
-        input[0, 1] = hold;
-        input[0, 2] = rel;
+        byte[] input = new byte[3];
+        input[0] = press;
+        input[1] = hold;
+        input[2] = rel;
         buffer.Enqueue(input);
-        if ((int)inputByte != 0)
+        /*{if ((int)inputByte != 0)
         {
-            getBuffer();
+            printBuffer();
         }
-
+        }*/
     }
 
-    public void getBuffer()
+    public void printBuffer()
     {
         Debug.Log(buffer.ReturnBufferArray()[0]);
+        
+    }
+
+    public byte[][] GetBufferArray()
+    {
+        return (buffer.ReturnBufferArray());
+    }
+
+    public byte[] GetCurrentFrame()
+    {
+        return buffer.GetCurrentFrame();
     }
     
 

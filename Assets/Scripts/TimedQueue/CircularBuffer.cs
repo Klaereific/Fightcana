@@ -86,4 +86,8 @@ public class CircularBuffer<T>
 
         return output;
     }
+    public T GetCurrentFrame()
+    {
+        return buffer[tail];
+    }
 }

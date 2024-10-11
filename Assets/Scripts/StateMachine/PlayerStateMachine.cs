@@ -57,15 +57,17 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
         playerGO = GameObject.Find("Player");
         player = playerGO.GetComponent<Player>();
 
+        /*{
         inputBufferP1 = playerGO.GetComponent<InputBuffer>();
 
         inputBufferP1.InitializeBuffer(40, player);
         
         inputBufferP1.StartBuffer();
+        }*/
 
         width = playerGO.transform.localScale.x;
         height = playerGO.transform.localScale.y;
-        _context = new PlayerStateContext(player, moveSpeed, jumpForce, lowJumpMultiplier,fallMultiplier,angledJump, playerGO.transform,hitboxPrefab);
+        _context = new PlayerStateContext(playerGO, moveSpeed, jumpForce, lowJumpMultiplier,fallMultiplier,angledJump,hitboxPrefab);
         _context.groundCheck = transform.Find("GroundCheck");
         
         //_controls = new PlayerControls();
@@ -107,10 +109,12 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
         States.Add(EPlayerState.Attacking, new Player_Attacking(_context, EPlayerState.Attacking));
         currentState = States[EPlayerState.Idle];
     }
+    /*{
     private void InititalizeControls()
     {
         _controls.Gameplay.LightAttack.performed += ctx => _context.button_queue.Enqueue(Buttons.light_attack);
     }
+    }*/
 
     private void UpdateInput()
     {

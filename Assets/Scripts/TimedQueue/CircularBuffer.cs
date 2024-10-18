@@ -77,7 +77,7 @@ public class CircularBuffer<T>
     
     public T[] ReturnBufferArray()
     {
-        T[] output = new T[this.capacity];
+        T[] output = new T[capacity];
         for (int i = 0; i < size; i++)
         {
             int index = (tail + i) % capacity;

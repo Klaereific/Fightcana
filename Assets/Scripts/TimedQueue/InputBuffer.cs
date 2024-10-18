@@ -1,9 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static GameHandler;
 
 public class InputBuffer : MonoBehaviour
 {
+    public delegate void ButtonInputHandler(object source, byte[][] buffer_state);
+
+    public event ButtonInputHandler OnButtonInput;
+
     private CircularBuffer<byte[]> buffer;
     private System.Timers.Timer timer;
     private byte inputByte;
@@ -19,7 +24,11 @@ public class InputBuffer : MonoBehaviour
         //timer = new System.Timers.Timer(17);
         buffer = new CircularBuffer<byte[]>(size);
         byte[] empty_in = new byte[3];
-        buffer.Enqueue(empty_in);
+        for (int i = 0; i < size; i++)
+        {
+            buffer.Enqueue(empty_in);
+        }
+        //buffer.Enqueue(empty_in);
         n = size;
         //timer.AutoReset = true;
         //timer.Elapsed += (sender, e) => SFT();
@@ -102,16 +111,16 @@ public class InputBuffer : MonoBehaviour
         input[1] = hold;
         input[2] = rel;
         buffer.Enqueue(input);
-        /*{if ((int)inputByte != 0)
+        if (press > 15)
         {
-            printBuffer();
+            OnButtonInput?.Invoke(this, buffer.ReturnBufferArray());
         }
-        }*/
+        
     }
 
     public void printBuffer()
     {
-        Debug.Log(buffer.ReturnBufferArray()[0]);
+        Debug.Log(buffer.GetCurrentFrame()[0]);
         
     }
 

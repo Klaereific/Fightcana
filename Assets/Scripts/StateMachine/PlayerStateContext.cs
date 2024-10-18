@@ -32,6 +32,7 @@ public class PlayerStateContext
     // Ground check
     public bool isGrounded;
 
+    public bool isAttacking;
     // ducking check
 
     // groundCheck circle 
@@ -50,6 +51,8 @@ public class PlayerStateContext
     public Player _player;
 
     public InputBuffer _buffer;
+
+    public byte[][] _buffer_state;
 
     public PlayerStateContext(GameObject playerGO,float moveSpeed,float jumpForce,float lowJumpMultiplier, float fallMultiplier, float angledJump,GameObject hitboxPref)
     {
@@ -76,6 +79,8 @@ public class PlayerStateContext
         _buffer.InitializeBuffer(40, _player);
         _buffer.StartBuffer();
 
+        _buffer.OnButtonInput += OnButtonInput;
+
         //button_queue = new TimedQueue<PlayerStateMachine.Buttons>(10,60,60); // args: capacity, expiration time, exp time check timer
         //movement_queue = new TimedQueue<PlayerStateMachine.MovementButtons>(10,60,60);
     }
@@ -84,5 +89,9 @@ public class PlayerStateContext
     public float Width => _width;
     public float Height => _height;
 
-
+    public void OnButtonInput(object source, byte[][] buffer_state)
+    {
+        isAttacking = true;
+        _buffer_state = buffer_state;
+    }
 }

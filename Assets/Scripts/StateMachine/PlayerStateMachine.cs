@@ -92,7 +92,7 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
     }
     public void Update()
     {
-        UpdateInput();
+        //UpdateInput();
         DrawCube(transform.position,_context.customRb.size,Color.green);
         DrawCube(_context.customRb.position, _context.customRb.size, Color.red);
 

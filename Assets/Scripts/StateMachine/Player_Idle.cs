@@ -18,6 +18,9 @@ public class Player_Idle : PlayerState
         nextStateKey = PlayerStateMachine.EPlayerState.Idle;
     }
     public override void UpdateState() {
+
+        /* // Byte implementation (inefficient)
+        
         byte input_byte = Context._buffer.GetCurrentFrame()[0];
         if ((int)input_byte > 15)  // "Attack" button pressed
         {
@@ -35,13 +38,36 @@ public class Player_Idle : PlayerState
             
             nextStateKey = PlayerStateMachine.EPlayerState.Walk;
         }
-        
+        */
+        float inHorz = Input.GetAxis("MoveHorizontal");
+        float inVert = Input.GetAxis("MoveVertical");
+        if (Context.isAttacking)
+        {
+            nextStateKey = PlayerStateMachine.EPlayerState.Attacking;
+            Context.isAttacking = false;
+        }
+        if (inVert > 0.5f)
+        {
+            nextStateKey = PlayerStateMachine.EPlayerState.Jump;
+        }
+        else if (inVert < -0.5f)
+        {
+            nextStateKey = PlayerStateMachine.EPlayerState.Duck;
+        }
+        else if (inHorz != 0)
+        {
+
+            nextStateKey = PlayerStateMachine.EPlayerState.Walk;
+        }
+
+
 
     }
     public override PlayerStateMachine.EPlayerState GetNextState()
     {
         return nextStateKey;
     }
+    
     public override void OnTriggerEnter(Collider other) {}
     public override void OnTriggerStay(Collider other) {}
     public override void OnTriggerExit(Collider other) {}

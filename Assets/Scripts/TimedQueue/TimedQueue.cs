@@ -42,6 +42,7 @@ public class TimedQueue<T>
         return default(T);
     }
 
+    
     private void RemoveExpiredElements(object state)
     {
         DateTime currentTime = DateTime.UtcNow;
@@ -52,6 +53,7 @@ public class TimedQueue<T>
             Count -= 1;
         }
     }
+    
 
     public void Dispose()
     {

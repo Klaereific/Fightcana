@@ -48,10 +48,12 @@ public class Player_Jump : PlayerState
         {
             Context.customRb.velocity += Vector2.up * Physics2D.gravity.y * Time.deltaTime;
         }
+        /*{
         if(Context.button_queue.Count > 0)
         {
             nextStateKey = PlayerStateMachine.EPlayerState.JumpAttack;
         }
+        }*/
         
     }
     public override PlayerStateMachine.EPlayerState GetNextState()

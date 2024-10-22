@@ -8,7 +8,7 @@ public class Hitbox : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log("Collision");
+        //Debug.Log("Collision");
         if (!hasDamagedPlayer && collision.gameObject.CompareTag("Player"))
         {
             Player player = collision.GetComponent<Player>();

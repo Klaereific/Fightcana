@@ -13,7 +13,7 @@ public class Player_Jump : PlayerState
     public override void EnterState()
     {
         Debug.Log("Enter Jump state");
-        float moveInput = Input.GetAxis("MoveHorizontal");
+        float moveInput = Input.GetAxis(Context._player._MH_in);
         startHeight = Context.customRb.position.y;
         isFalling = false;
         Context._movementState = "Jumping";
@@ -35,7 +35,7 @@ public class Player_Jump : PlayerState
                 isFalling = true;
             }
         }
-        else if (Context.customRb.velocity.y > 0 && Input.GetAxis("MoveVertical")>0.5f)
+        else if (Context.customRb.velocity.y > 0 && Input.GetAxis(Context._player._MV_in)>0.5f)
         {
             Context.customRb.velocity += Vector2.up * Physics2D.gravity.y * (Context._lowJumpMultiplier - 1) * Time.deltaTime;
         }

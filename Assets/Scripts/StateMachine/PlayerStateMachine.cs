@@ -10,7 +10,10 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
         Walk,
         Duck,
         Jump,
-        Attacking
+        Attacking,
+        Blocking,
+        Hit,
+        Knocked
     }
 
     public enum Buttons
@@ -50,13 +53,17 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
     public GameObject playerGO;
     public Player player;
     
-    private InputBuffer inputBufferP1;
     // Start is called before the first frame update
     void Awake()
     {
-        playerGO = GameObject.Find("Player");
+        playerGO = transform.parent.gameObject; 
         player = playerGO.GetComponent<Player>();
 
+        string[] controllers = Input.GetJoystickNames();
+        for(int i=0;i<controllers.Length; i++){
+            Debug.Log(i+": "+controllers[i]);
+        }
+        
         /*{
         inputBufferP1 = playerGO.GetComponent<InputBuffer>();
 
@@ -107,6 +114,9 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
         States.Add(EPlayerState.Duck, new Player_Duck(_context,EPlayerState.Duck));
         States.Add(EPlayerState.Jump, new Player_Jump(_context,EPlayerState.Jump));
         States.Add(EPlayerState.Attacking, new Player_Attacking(_context, EPlayerState.Attacking));
+        States.Add(EPlayerState.Blocking, new Player_Blocking(_context, EPlayerState.Blocking));
+        States.Add(EPlayerState.Hit, new Player_Hit(_context, EPlayerState.Hit));
+        States.Add(EPlayerState.Knocked, new Player_Knocked(_context, EPlayerState.Knocked));
         currentState = States[EPlayerState.Idle];
     }
     /*{
@@ -119,7 +129,7 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
     private void UpdateInput()
     {
         
-        if (Input.GetAxis("MoveVertical") < -0.5f)
+        if (Input.GetAxis(_context._player._MV_in) < -0.5f)
         {
             _context.jumpRequest = true;
         }
@@ -148,46 +158,6 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
         */
     }
 
-    public byte GetInput()
-    {
-
-        int input = 0;
-        if (Input.GetButton("X")) //West
-        {
-            input += 2 ^ 7;
-        }
-        if (Input.GetButton("Y")) //North
-        {
-            input += 2 ^ 6;
-        }
-        if (Input.GetButton("B")) //East
-        {
-            input += 2 ^ 5;
-        }
-        if (Input.GetButton("A")) //South
-        {
-            input += 2 ^ 4;
-        }
-        if (Input.GetAxis("MoveHorizontal") < -0.5f) //Move left
-        {
-            input += 2 ^ 3;
-        }
-        if (Input.GetAxis("MoveVertical") > 0.5f) //Move up
-        {
-            input += 2 ^ 2;
-        }
-        if (Input.GetAxis("MoveHorizontal") > 0.5f) //Move right
-        {
-            input += 2 ^ 1;
-        }
-        if (Input.GetAxis("MoveVertical") < -0.5f) //Move down
-        {
-            input += 2 ^ 0;
-        }
-        Debug.Log(input);
-        return (byte)input;
-
-    }
 
     public static void SpawnHitbox(GameObject hitboxPrefab,Player player,Vector3 position, Quaternion rotation, Vector2 size, float damage, float duration, Color color)
     {

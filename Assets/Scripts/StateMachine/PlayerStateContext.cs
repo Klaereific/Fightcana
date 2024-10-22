@@ -53,6 +53,10 @@ public class PlayerStateContext
     public InputBuffer _buffer;
 
     public byte[][] _buffer_state;
+    
+    public int _blockStun;
+    public int _hitStun;
+    public int _knockStun;
 
     public PlayerStateContext(GameObject playerGO,float moveSpeed,float jumpForce,float lowJumpMultiplier, float fallMultiplier, float angledJump,GameObject hitboxPref)
     {
@@ -93,5 +97,10 @@ public class PlayerStateContext
     {
         isAttacking = true;
         _buffer_state = buffer_state;
+    }
+
+    public void OnBlock(object source, int Block_Stun)
+    {
+        _blockStun = Block_Stun;
     }
 }

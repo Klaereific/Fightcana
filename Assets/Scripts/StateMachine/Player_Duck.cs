@@ -19,7 +19,7 @@ public class Player_Duck : PlayerState
         nextStateKey = PlayerStateMachine.EPlayerState.Duck;
     }
     public override void UpdateState() {
-        if (Input.GetAxis("MoveVertical")>-0.5f)
+        if (Input.GetAxis(Context._player._MV_in)>-0.5f)
         {
             nextStateKey = PlayerStateMachine.EPlayerState.Idle;
         }

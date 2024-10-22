@@ -22,7 +22,7 @@ public class Player_Walk : PlayerState
         nextStateKey = PlayerStateMachine.EPlayerState.Walk;
     }
     public override void UpdateState() {
-        float moveInput = Input.GetAxisRaw("Horizontal");
+        float moveInput = Input.GetAxisRaw(Context._player._MH_in);
         int direction = 0;
         _x_axis_blocked = Context._player.x_axis_blocked;
         //Debug.Log(!(moveInput < 0 && !_rev && _x_axis_blocked));

@@ -39,8 +39,8 @@ public class Player_Idle : PlayerState
             nextStateKey = PlayerStateMachine.EPlayerState.Walk;
         }
         */
-        float inHorz = Input.GetAxis("MoveHorizontal");
-        float inVert = Input.GetAxis("MoveVertical");
+        float inHorz = Input.GetAxis(Context._player._MH_in);
+        float inVert = Input.GetAxis(Context._player._MV_in);
         if (Context.isAttacking)
         {
             nextStateKey = PlayerStateMachine.EPlayerState.Attacking;

@@ -8,6 +8,14 @@ public class Player : MonoBehaviour
     public bool x_axis_blocked=false;
     public bool rev = false;
 
+    public string _W_in ="X1";
+    public string _N_in = "Y1";
+    public string _E_in = "B1";
+    public string _S_in = "A1";
+
+    public string _MV_in = "MoveVertical1";
+    public string _MH_in = "MoveHorizontal";
+
 
     private void Awake()
     {
@@ -30,14 +38,14 @@ public class Player : MonoBehaviour
     public byte GetInput()
     {
         byte input = 0;
-        if (Input.GetButton("X")) input |= 0b10000000; //West
-        if (Input.GetButton("Y")) input |= 0b01000000; //North
-        if (Input.GetButton("B")) input |= 0b00100000; //East
-        if (Input.GetButton("A")) input |= 0b00010000; //South
-        if (Input.GetAxis("MoveHorizontal") < -0.5f) input |= 0b00001000; // Move left
-        if (Input.GetAxis("MoveVertical") > 0.5f) input |= 0b00000100; // Move up
-        if (Input.GetAxis("MoveHorizontal") > 0.5f) input |= 0b00000010; // Move right
-        if (Input.GetAxis("MoveVertical") < -0.5f) input |= 0b00000001; // Move down
+        if (Input.GetButton(_W_in)) input |= 0b10000000; //West
+        if (Input.GetButton(_N_in)) input |= 0b01000000; //North
+        if (Input.GetButton(_E_in)) input |= 0b00100000; //East
+        if (Input.GetButton(_S_in)) input |= 0b00010000; //South
+        if (Input.GetAxis(_MH_in) < -0.5f) input |= 0b00001000; // Move left
+        if (Input.GetAxis(_MV_in) > 0.5f) input |= 0b00000100; // Move up
+        if (Input.GetAxis(_MH_in) > 0.5f) input |= 0b00000010; // Move right
+        if (Input.GetAxis(_MV_in) < -0.5f) input |= 0b00000001; // Move down
         
         //Debug.Log(input);
         return input;

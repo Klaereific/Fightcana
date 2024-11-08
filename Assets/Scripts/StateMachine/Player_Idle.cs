@@ -60,6 +60,12 @@ public class Player_Idle : PlayerState
             nextStateKey = PlayerStateMachine.EPlayerState.Walk;
         }
 
+        if (Context._isHit)
+        {
+            nextStateKey = PlayerStateMachine.EPlayerState.Hit;
+            Context._isHit = false;
+        }
+
 
 
     }

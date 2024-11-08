@@ -48,6 +48,8 @@ public class PlayerStateContext
 
     public GameObject _hitboxPrefab;
 
+    public Hitbox _hitbox;
+
     public Player _player;
 
     public InputBuffer _buffer;
@@ -57,6 +59,8 @@ public class PlayerStateContext
     public int _blockStun;
     public int _hitStun;
     public int _knockStun;
+
+    public bool _isHit=false;
 
     public PlayerStateContext(GameObject playerGO,float moveSpeed,float jumpForce,float lowJumpMultiplier, float fallMultiplier, float angledJump,GameObject hitboxPref)
     {
@@ -85,6 +89,9 @@ public class PlayerStateContext
 
         _buffer.OnButtonInput += OnButtonInput;
 
+        _hitbox = hitboxPref.GetComponent<Hitbox>();
+        _player.OnHit += OnHit;
+
         //button_queue = new TimedQueue<PlayerStateMachine.Buttons>(10,60,60); // args: capacity, expiration time, exp time check timer
         //movement_queue = new TimedQueue<PlayerStateMachine.MovementButtons>(10,60,60);
     }
@@ -102,5 +109,11 @@ public class PlayerStateContext
     public void OnBlock(object source, int Block_Stun)
     {
         _blockStun = Block_Stun;
+    }
+
+    public void OnHit(object source, int Hit_Stun)
+    {
+        _hitStun = Hit_Stun;
+        _isHit = true;
     }
 }

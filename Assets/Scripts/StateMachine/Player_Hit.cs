@@ -19,7 +19,7 @@ public class Player_Hit : PlayerState
     }
     public override void UpdateState() {
         _hitStun --;
-        if(_hitStun == 0){
+        if(_hitStun < 1){
             if(Context.isAttacking){
                 nextStateKey = PlayerStateMachine.EPlayerState.Attacking;
             }

@@ -14,6 +14,8 @@ public class Player_Attacking : PlayerState
     int recovery;
     float damage;
     int frame_count;
+    int hitstun;
+    int blockstun;
 
     
 
@@ -42,6 +44,8 @@ public class Player_Attacking : PlayerState
         position = attack._position;
         size = attack._size;
         damage = attack._damage;
+        hitstun = attack._hitstun;
+        blockstun = attack._blockstun;
         if (Context._player.rev)
         {
             position.x *= -1;
@@ -55,14 +59,14 @@ public class Player_Attacking : PlayerState
     {
         frame_count += 1;
         if (frame_count == 1) {
-            PlayerStateMachine.SpawnHitbox(Context._hitboxPrefab, Context._player, Context.customRb.position + position, Context.playerTransform.rotation, size, 0, startup / 60f, Color.blue);
+            PlayerStateMachine.SpawnHitbox(Context._hitboxPrefab, Context._player, Context.customRb.position + position, Context.playerTransform.rotation, size, 0, 0 ,0 , startup / 60f, Color.blue);
         }
         if (frame_count == (startup + 1)) {
-            PlayerStateMachine.SpawnHitbox(Context._hitboxPrefab, Context._player, Context.customRb.position + position, Context.playerTransform.rotation, size, damage, duration / 60f, Color.red);
+            PlayerStateMachine.SpawnHitbox(Context._hitboxPrefab, Context._player, Context.customRb.position + position, Context.playerTransform.rotation, size, damage, blockstun, hitstun, duration / 60f, Color.red);
         }
         if (frame_count == (duration + startup + 1))
         {
-            PlayerStateMachine.SpawnHitbox(Context._hitboxPrefab, Context._player, Context.customRb.position + position, Context.playerTransform.rotation, size, 0, recovery / 60f, Color.grey);
+            PlayerStateMachine.SpawnHitbox(Context._hitboxPrefab, Context._player, Context.customRb.position + position, Context.playerTransform.rotation, size, 0, 0, 0, recovery / 60f, Color.grey);
         }
         if(frame_count > (startup + duration + recovery))
         {
@@ -128,7 +132,8 @@ public class Player_Attacking : PlayerState
             }
         }
         //Debug.Log("Empty path");
-        return (new KeyValuePair<string,Attack> ("empty",new Attack(0, 1, new byte[1] { 0b00000000 }, new Vector2(0.5f, 0f), new Vector2(0.5f, 0.3f), 2f, 1, 1, 1)));
-        
+        //
+        //return (new KeyValuePair<string,Attack> ("empty",new Attack(0, 1, new byte[1] { 0b00000000 }, new Vector2(0.5f, 0f), new Vector2(0.5f, 0.3f), 2f, 1, 1, 1)));
+        return (new KeyValuePair<string, Attack>("empty", new Attack()));
     }
 }

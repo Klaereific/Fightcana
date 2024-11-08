@@ -1,9 +1,14 @@
+using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    public delegate void OnHitHandler(object source, int hitstun);
 
-    
+    public event OnHitHandler OnHit;
+
+
     public float health;
     public bool x_axis_blocked=false;
     public bool rev = false;
@@ -23,12 +28,12 @@ public class Player : MonoBehaviour
         
     }
     
-    public void TakeDamage(float damage)
+    public void TakeDamage(float damage, int hitstun)
     {
         health -= damage;
         health = Mathf.Clamp(health, 0, 100);
         Debug.Log("Player Health: " + health);
-
+        OnHit?.Invoke(this, hitstun);
         if (health <= 0)
         {
             // Handle player death
@@ -51,4 +56,5 @@ public class Player : MonoBehaviour
         return input;
         
     }
+    
 }

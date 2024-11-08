@@ -1,8 +1,14 @@
+using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Hitbox : MonoBehaviour
 {
+
+
     public float damage = 10f;  // Damage dealt to the player
+    public int hitstun = 0;
+    public int blockstun = 0;
     private bool hasDamagedPlayer = false;
     public Player sourcePlayer;
 
@@ -15,7 +21,8 @@ public class Hitbox : MonoBehaviour
 
             if (player != null && player != sourcePlayer)
             {
-                player.TakeDamage(damage);
+                
+                player.TakeDamage(damage,hitstun);
                 hasDamagedPlayer = true;
             }
         }

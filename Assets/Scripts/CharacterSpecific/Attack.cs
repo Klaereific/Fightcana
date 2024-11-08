@@ -9,15 +9,20 @@ public class Attack
     public Vector2 _size;
 
     public float _damage=0;
+    public int _blockstun = 0;
+    public int _hitstun = 0;
+
 
     public int _startup = 0;
     public int _duration=0;
     public int _recovery=0;
 
+
+
     public int _inputWindow=0;
     public int _inputTolerance=0;
     public byte[] _inputs; 
-    public Attack(int inWin,int inTol,byte[] inBytes,Vector2 position, Vector2 size, float damage ,int startup, int duration,int recovery)
+    public Attack(int inWin,int inTol,byte[] inBytes,Vector2 position, Vector2 size, float damage, int blockstun, int hitstun ,int startup, int duration,int recovery)
     {
         _inputWindow = inWin;
         _inputTolerance = inTol;
@@ -28,6 +33,8 @@ public class Attack
         _size = size;
 
         _damage = damage;
+        _blockstun = blockstun; 
+        _hitstun = hitstun;
 
         _startup = startup;
         _duration = duration;

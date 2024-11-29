@@ -13,6 +13,9 @@ public class Player_Idle : PlayerState
         Debug.Log("Enter Idle state");
         Context.customRb.velocity.x = 0f;
         Context._movementState = "Idle";
+        Context._player.isBlocking = false;
+        Context.animator.SetInteger("State", 0);
+        Context.animator.SetInteger("Form", 0);
     }
     public override void ExitState() {
         nextStateKey = PlayerStateMachine.EPlayerState.Idle;
@@ -43,8 +46,9 @@ public class Player_Idle : PlayerState
         float inVert = Input.GetAxis(Context._player._MV_in);
         if (Context.isAttacking)
         {
-            nextStateKey = PlayerStateMachine.EPlayerState.Attacking;
             Context.isAttacking = false;
+            nextStateKey = PlayerStateMachine.EPlayerState.Attacking;
+            
         }
         if (inVert > 0.5f)
         {

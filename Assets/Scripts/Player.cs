@@ -7,11 +7,13 @@ public class Player : MonoBehaviour
     public delegate void OnHitHandler(object source, int hitstun);
 
     public event OnHitHandler OnHit;
+    public event OnHitHandler OnBlock;
 
 
     public float health;
     public bool x_axis_blocked=false;
     public bool rev = false;
+    public bool isBlocking = false;
 
     public string _W_in ="X1";
     public string _N_in = "Y1";
@@ -39,7 +41,13 @@ public class Player : MonoBehaviour
             // Handle player death
             Debug.Log("Player is dead!");
         }
+        
     }
+    public void GoIntoBlock(int blockstun)
+    {
+        OnBlock?.Invoke(this, blockstun);
+    }
+
     public byte GetInput()
     {
         byte input = 0;

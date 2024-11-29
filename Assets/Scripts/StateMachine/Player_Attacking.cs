@@ -35,8 +35,8 @@ public class Player_Attacking : PlayerState
         // button = Context.button_queue.Dequeue();
         // Attack attack = evaluateButton(button);
         
-        //Debug.Log("MonoBehaviour Enabled: " + Context._buffer.enabled);
-        //Debug.Log(Context == null ? "Context is null" : "Context is not null");
+        // Debug.Log("MonoBehaviour Enabled: " + Context._buffer.enabled);
+        // Debug.Log(Context == null ? "Context is null" : "Context is not null");
         Attack attack = EvaluateButtons1(Context._buffer_state);
         startup = attack._startup;
         duration = attack._duration;
@@ -59,25 +59,33 @@ public class Player_Attacking : PlayerState
     {
         frame_count += 1;
         if (frame_count == 1) {
+            Debug.Log("Startup");
+            Debug.Log(frame_count);
             PlayerStateMachine.SpawnHitbox(Context._hitboxPrefab, Context._player, Context.customRb.position + position, Context.playerTransform.rotation, size, 0, 0 ,0 , startup / 60f, Color.blue);
         }
         if (frame_count == (startup + 1)) {
+            Debug.Log("Attack");
+            Debug.Log(frame_count);
             PlayerStateMachine.SpawnHitbox(Context._hitboxPrefab, Context._player, Context.customRb.position + position, Context.playerTransform.rotation, size, damage, blockstun, hitstun, duration / 60f, Color.red);
         }
         if (frame_count == (duration + startup + 1))
         {
+            Debug.Log("Recovery");
+            Debug.Log(frame_count);
             PlayerStateMachine.SpawnHitbox(Context._hitboxPrefab, Context._player, Context.customRb.position + position, Context.playerTransform.rotation, size, 0, 0, 0, recovery / 60f, Color.grey);
         }
         if(frame_count > (startup + duration + recovery))
         {
             nextStateKey = PlayerStateMachine.EPlayerState.Idle;
+            Context.isAttacking = false;
         }
-
     }
+
     public override PlayerStateMachine.EPlayerState GetNextState()
     {
         return nextStateKey;
     }
+
     public override void OnTriggerEnter(Collider other) { }
     public override void OnTriggerStay(Collider other) { }
     public override void OnTriggerExit(Collider other) { }
@@ -86,28 +94,28 @@ public class Player_Attacking : PlayerState
     {
         foreach (byte[] b in bufferarray)
         {
-            Debug.Log(b[0]);
+            //Debug.Log(b[0]);
         }
         int tail = bufferarray.GetLength(0) - 1;
-        Debug.Log(bufferarray[tail][0]);
+        //Debug.Log(bufferarray[tail][0]);
         
         if ((bufferarray[tail][0] & 0b10000000)!=0)
         {
-            KeyValuePair<string, Attack>  attack = EvaluateButtons2(bufferarray, Context._p1_CP.gWest_attackDict, tail);
-            Debug.Log(attack.Key);
-            return (attack.Value);
+            Attack attack = EvaluateButtons2(bufferarray, Context._p1_CP.gWest_attackDict, tail);
+            Debug.Log(attack._name);
+            return (attack);
         }
         else
         {
-            Debug.Log("Undefined Attack");
+            //Debug.Log("Undefined Attack");
             return (new Attack());
         }
     }
-    private KeyValuePair<string, Attack> EvaluateButtons2(byte[][] buffer, Dictionary<string,Attack> attackDict, int tail)
+    private Attack EvaluateButtons2(byte[][] buffer, Attack[] attackDict, int tail)
     {
-        foreach(KeyValuePair<string, Attack> entry in attackDict)
+        foreach(Attack entry in attackDict)
         {
-            Attack attack = entry.Value;
+            Attack attack = entry;
             
             
 
@@ -134,6 +142,6 @@ public class Player_Attacking : PlayerState
         //Debug.Log("Empty path");
         //
         //return (new KeyValuePair<string,Attack> ("empty",new Attack(0, 1, new byte[1] { 0b00000000 }, new Vector2(0.5f, 0f), new Vector2(0.5f, 0.3f), 2f, 1, 1, 1)));
-        return (new KeyValuePair<string, Attack>("empty", new Attack()));
+        return (new Attack());
     }
 }

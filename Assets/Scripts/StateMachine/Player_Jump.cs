@@ -17,6 +17,22 @@ public class Player_Jump : PlayerState
         startHeight = Context.customRb.position.y;
         isFalling = false;
         Context._movementState = "Jumping";
+        Context.animator.SetInteger("State", 2);
+        if (Context.customRb.velocity.x > 0.1)
+        {
+            Context.animator.SetInteger("Form", 2);
+        }
+        else if (Context.customRb.velocity.x < -0.1)
+        {
+            Context.animator.SetInteger("Form", 3);
+        }
+        else
+        {
+            Context.animator.SetInteger("Form", 1);
+        }
+
+
+
         Jump(moveInput, Context);
         //Context.jumpRequest = false;
         
@@ -35,7 +51,7 @@ public class Player_Jump : PlayerState
                 isFalling = true;
             }
         }
-        else if (Context.customRb.velocity.y > 0 && Input.GetAxis(Context._player._MV_in)>0.5f)
+        else if (Context.customRb.velocity.y > 0 && Input.GetAxis(Context._player._MV_in)<0.5f)
         {
             Context.customRb.velocity += Vector2.up * Physics2D.gravity.y * (Context._lowJumpMultiplier - 1) * Time.deltaTime;
         }

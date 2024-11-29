@@ -52,6 +52,10 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
 
     public GameObject playerGO;
     public Player player;
+
+    public Animator animator;
+
+    public float rb_margin=0f;
     
     // Start is called before the first frame update
     void Awake()
@@ -74,7 +78,7 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
 
         width = playerGO.transform.localScale.x;
         height = playerGO.transform.localScale.y;
-        _context = new PlayerStateContext(playerGO, moveSpeed, jumpForce, lowJumpMultiplier,fallMultiplier,angledJump,hitboxPrefab);
+        _context = new PlayerStateContext(playerGO, moveSpeed, jumpForce, lowJumpMultiplier,fallMultiplier,angledJump,hitboxPrefab, rb_margin);
         _context.groundCheck = transform.Find("GroundCheck");
         
         //_controls = new PlayerControls();
@@ -94,15 +98,17 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
         _context.customRb.UpdatePhysics(Time.fixedDeltaTime);
         playerGO.transform.position = _context.customRb.position;
         currentState.UpdateState();
+        
         //Debug.Log(Input.GetAxis("MoveVertical"));
 
     }
     public void Update()
     {
+
         //UpdateInput();
         DrawCube(transform.position,_context.customRb.size,Color.green);
         DrawCube(_context.customRb.position, _context.customRb.size, Color.red);
-
+        //Debug.Log(_context._player.isBlocking);
     }
 
     
@@ -126,42 +132,10 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
     }
     }*/
 
-    private void UpdateInput()
-    {
-        
-        if (Input.GetAxis(_context._player._MV_in) < -0.5f)
-        {
-            _context.jumpRequest = true;
-        }
-        /*
-        if (Input.GetButton("X"))
-        {
-            Debug.Log("Light attack pressed");
-            _context.button_queue.Enqueue(Buttons.light_attack);
-        }
-        if (Input.GetButton("Y"))
-        {
-            _context.button_queue.Enqueue(Buttons.medium_attack);
-        }
-        if (Input.GetButton("B"))
-        {
-            _context.button_queue.Enqueue(Buttons.heavy_attack);
-        }
-        if (Input.GetButton("A"))
-        {
-            _context.button_queue.Enqueue(Buttons.special_attack);
-        }
-        if (Input.GetButton("R1"))
-        {
-            _context.button_queue.Enqueue(Buttons.dash);
-        }
-        */
-    }
-
 
     public static void SpawnHitbox(GameObject hitboxPrefab,Player player,Vector3 position, Quaternion rotation, Vector2 size, float damage, int blockstun, int hitstun, float duration, Color color)
     {
-        //Debug.Log("Hitbox spawned");
+        Debug.Log(duration*60);
         GameObject hitbox = Instantiate(hitboxPrefab, position, rotation);
         hitbox.transform.localScale = size;
         hitbox.GetComponent<SpriteRenderer>().color = color;

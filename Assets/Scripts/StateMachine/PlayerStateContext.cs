@@ -60,15 +60,18 @@ public class PlayerStateContext
     public int _hitStun;
     public int _knockStun;
 
-    public bool _isHit=false;
+    private float _rb_margin;
 
-    public PlayerStateContext(GameObject playerGO,float moveSpeed,float jumpForce,float lowJumpMultiplier, float fallMultiplier, float angledJump,GameObject hitboxPref)
+    public bool _isHit=false;
+    public Animator animator;
+
+    public PlayerStateContext(GameObject playerGO,float moveSpeed,float jumpForce,float lowJumpMultiplier, float fallMultiplier, float angledJump,GameObject hitboxPref,float rb_margins)
     {
         playerTransform = playerGO.GetComponent<Transform>();
         //playerTransform = playertransform;
         _width = playerTransform.localScale.x;
         _height = playerTransform.localScale.y;
-        customRb = new CustomRigidbody2D(_width, _height);
+        customRb = new CustomRigidbody2D(_width, _height,playerGO, rb_margins);
         customRb.position = playerTransform.position;
 
         _player = playerGO.GetComponent<Player>();
@@ -79,7 +82,7 @@ public class PlayerStateContext
         _lowJumpMultiplier = lowJumpMultiplier;
         _fallMultiplier = fallMultiplier;
         _angledJump = angledJump;
-        _p1_CP = new CharacterParameters(2f, _moveSpeed, new Vector2(_width, _height));
+        _p1_CP = playerGO.GetComponent<CharacterParameters>();
         _hitboxPrefab = hitboxPref;
 
         _buffer = playerGO.GetComponent<InputBuffer>();
@@ -92,6 +95,13 @@ public class PlayerStateContext
         _hitbox = hitboxPref.GetComponent<Hitbox>();
         _player.OnHit += OnHit;
 
+        _player.OnBlock += OnBlock;
+
+        animator = playerGO.GetComponent<Animator>();
+
+        
+
+
         //button_queue = new TimedQueue<PlayerStateMachine.Buttons>(10,60,60); // args: capacity, expiration time, exp time check timer
         //movement_queue = new TimedQueue<PlayerStateMachine.MovementButtons>(10,60,60);
     }
@@ -102,6 +112,7 @@ public class PlayerStateContext
 
     public void OnButtonInput(object source, byte[][] buffer_state)
     {
+        Debug.Log("Button pressed");
         isAttacking = true;
         _buffer_state = buffer_state;
     }

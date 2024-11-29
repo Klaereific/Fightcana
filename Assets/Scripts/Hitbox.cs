@@ -9,13 +9,13 @@ public class Hitbox : MonoBehaviour
     public float damage = 10f;  // Damage dealt to the player
     public int hitstun = 0;
     public int blockstun = 0;
-    private bool hasDamagedPlayer = false;
+    private bool hasHitPlayer = false;
     public Player sourcePlayer;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         //Debug.Log("Collision");
-        if (!hasDamagedPlayer && collision.gameObject.CompareTag("Player"))
+        if (!hasHitPlayer && collision.gameObject.CompareTag("Player"))
         {
             Player player = collision.GetComponent<Player>();
 
@@ -23,7 +23,13 @@ public class Hitbox : MonoBehaviour
             {
                 
                 player.TakeDamage(damage,hitstun);
-                hasDamagedPlayer = true;
+                hasHitPlayer = true;
+            }
+            if (player != null && player != sourcePlayer && player.isBlocking)
+            {
+
+                player.GoIntoBlock(blockstun);
+                hasHitPlayer = true;
             }
         }
     }
@@ -32,7 +38,7 @@ public class Hitbox : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            hasDamagedPlayer = false;  // Reset the flag when the player leaves the hitbox
+            hasHitPlayer = false;  // Reset the flag when the player leaves the hitbox
         }
     }
 }

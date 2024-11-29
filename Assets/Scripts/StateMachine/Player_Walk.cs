@@ -5,6 +5,10 @@ public class Player_Walk : PlayerState
     //PlayerStateMachine.EPlayerState nextStateKey;
     private bool _rev;
     private bool _x_axis_blocked;
+    private float _moveSpeed;
+    private float _moveSpeed_back;
+    private float _moveInput;
+    private int _direction;
     public Player_Walk(PlayerStateContext context, PlayerStateMachine.EPlayerState StateKey) : base(context, StateKey)
     {
         //PlayerStateContext Context = context;
@@ -17,30 +21,54 @@ public class Player_Walk : PlayerState
         Context._movementState = "Walking";
         _rev = Context._player.rev;
         _x_axis_blocked = Context._player.x_axis_blocked;
+        _moveSpeed = Context._moveSpeed;
+        _moveSpeed_back = _moveSpeed * 0.7f;
+
+        _moveInput = Input.GetAxisRaw(Context._player._MH_in);
+        _direction = 0;
+        _x_axis_blocked = Context._player.x_axis_blocked;
+        //Debug.Log(!(moveInput < 0 && !_rev && _x_axis_blocked));
+        Context.animator.SetInteger("State", 1);
+        if (_moveInput > 0) { _direction = 1; }
+        else if (_moveInput < 0) {_direction = -1; }
+        if ((_direction < 0 && !_rev) || (_direction > 0 && _rev))
+        {
+            Context.animator.SetInteger("Form", 1);
+            Context._player.isBlocking = true;
+        }
+        else
+        {
+            Context.animator.SetInteger("Form", 0);
+        }
+
     }
     public override void ExitState() {
         nextStateKey = PlayerStateMachine.EPlayerState.Walk;
     }
     public override void UpdateState() {
-        float moveInput = Input.GetAxisRaw(Context._player._MH_in);
-        int direction = 0;
-        _x_axis_blocked = Context._player.x_axis_blocked;
-        //Debug.Log(!(moveInput < 0 && !_rev && _x_axis_blocked));
-        if (moveInput > 0) { direction = 1; }
-        else if (moveInput < 0) { direction = -1; }
-        if (!(moveInput > 0 && _rev && _x_axis_blocked) && !(moveInput < 0 && !_rev && _x_axis_blocked))
+
+
+        _moveInput = Input.GetAxisRaw(Context._player._MH_in);
+        if (!(_moveInput > 0 && _rev && _x_axis_blocked) && !(_moveInput < 0 && !_rev && _x_axis_blocked))
         {
-            Context.customRb.velocity.x = direction * Context._moveSpeed;
+            if (Context._player.isBlocking)
+            {
+                Context.customRb.velocity.x = _direction * _moveSpeed_back;
+            }
+            else
+            {
+                Context.customRb.velocity.x = _direction * _moveSpeed;
+            }
         }
         else
         {
             Context.customRb.velocity.x = 0f;
         }
-        
-        if(moveInput==0f){
+
+        if (_moveInput == 0f){
             nextStateKey = PlayerStateMachine.EPlayerState.Idle;
         }
-        if (Context.jumpRequest)
+        if  (Input.GetAxis(Context._player._MV_in) > 0.5)
         {
             nextStateKey = PlayerStateMachine.EPlayerState.Jump;
         }

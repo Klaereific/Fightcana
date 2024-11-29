@@ -11,6 +11,7 @@ public class Player_Duck : PlayerState
         Debug.Log("Enter Ducked state");
         Context.customRb.velocity.x = 0f;
         Context._movementState = "Ducked";
+        Context.animator.SetInteger("State", 3);
         Duck();
         
     }
@@ -36,14 +37,14 @@ public class Player_Duck : PlayerState
         float duckedheight = Context._height / 2;
         Context.customRb.position = new Vector2(Context.playerTransform.position.x, Context.playerTransform.position.y - duckedheight / 2);
         Context.customRb.SetScale(Context._width, duckedheight);
-        Context.playerTransform.localScale = new Vector2(Context._width, duckedheight);
-        
+        //Context.playerTransform.localScale = new Vector2(Context._width, duckedheight);
+
     }
     public void Stand()
     {
         Context.customRb.position = Context.playerTransform.position;
         Context.customRb.SetScale(Context._width, Context._height);
-        Context.playerTransform.localScale = new Vector2(Context._width, Context._height);
+        //Context.playerTransform.localScale = new Vector2(Context._width, Context._height);
         
     }
 }

@@ -13,6 +13,7 @@ public class Player_Blocking : PlayerState
     {
         Debug.Log("Enter blocked state");
         _blockStun = Context._blockStun;
+        Context.customRb.velocity.x = 0f;
     }
     public override void ExitState() {
         nextStateKey = PlayerStateMachine.EPlayerState.Blocking;

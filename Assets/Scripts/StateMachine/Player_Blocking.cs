@@ -14,6 +14,7 @@ public class Player_Blocking : PlayerState
         Debug.Log("Enter blocked state");
         _blockStun = Context._blockStun;
         Context.customRb.velocity.x = 0f;
+        Context.animator.SetInteger("State", 4);
     }
     public override void ExitState() {
         nextStateKey = PlayerStateMachine.EPlayerState.Blocking;
@@ -22,6 +23,7 @@ public class Player_Blocking : PlayerState
         _blockStun --;
         if(_blockStun == 0){
             nextStateKey = PlayerStateMachine.EPlayerState.Idle;
+            Context._isBlocking = false;
         }
     }
     public override PlayerStateMachine.EPlayerState GetNextState()

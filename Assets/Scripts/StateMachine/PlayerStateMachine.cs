@@ -44,6 +44,8 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
     public float fallMultiplier = 3.0f;
     public float angledJump = 3.0f;
 
+    private bool flipped;
+
     public GameObject hitboxPrefab;
     
     private PlayerStateContext _context;
@@ -78,6 +80,7 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
 
         width = playerGO.transform.localScale.x;
         height = playerGO.transform.localScale.y;
+        flipped = false;
         _context = new PlayerStateContext(playerGO, moveSpeed, jumpForce, lowJumpMultiplier,fallMultiplier,angledJump,hitboxPrefab, rb_margin);
         _context.groundCheck = transform.Find("GroundCheck");
         
@@ -97,11 +100,27 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
         base.FixedUpdate();
         _context.customRb.UpdatePhysics(Time.fixedDeltaTime);
         playerGO.transform.position = _context.customRb.position;
+        if (player.rev)
+        {
+            if (!flipped)
+            {
+                playerGO.GetComponent<SpriteRenderer>().flipX = true;
+                flipped=true;
+            }
+        }
+        else
+        {
+            if (flipped)
+            {
+                playerGO.GetComponent<SpriteRenderer>().flipX = false;
+                flipped = false;
+            }
+        }
         currentState.UpdateState();
-        
-        //Debug.Log(Input.GetAxis("MoveVertical"));
 
-    }
+            //Debug.Log(Input.GetAxis("MoveVertical"));
+
+        }
     public void Update()
     {
 
@@ -135,10 +154,12 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
 
     public static void SpawnHitbox(GameObject hitboxPrefab,Player player,Vector3 position, Quaternion rotation, Vector2 size, float damage, int blockstun, int hitstun, float duration, Color color)
     {
-        Debug.Log(duration*60);
+        // Debug.Log(duration*60);
         GameObject hitbox = Instantiate(hitboxPrefab, position, rotation);
         hitbox.transform.localScale = size;
-        hitbox.GetComponent<SpriteRenderer>().color = color;
+        Color adj_color = color;
+        adj_color.a = 0.2f;
+        hitbox.GetComponent<SpriteRenderer>().color = adj_color;
         hitbox.GetComponent<Hitbox>().damage = damage;  // Set the damage value if needed
         hitbox.GetComponent<Hitbox>().sourcePlayer = player;
         hitbox.GetComponent<Hitbox>().hitstun = hitstun;

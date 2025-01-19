@@ -11,29 +11,36 @@ public struct IntPair
     public int button; // Second integer
 }
 
+
+
 [Serializable]
 public class Attack
 {
-    public string _name = "...";
 
-    public Vector2 _position = new Vector2();
-    public Vector2 _size = new Vector2();
+    public string _name;
 
-    public float _damage=0;
-    public int _blockstun = 0;
-    public int _hitstun = 0;
+    public string _animationKey;
+    public int _animationForm;
+
+    public Vector2 _position;
+    public Vector2 _size;
+
+    public float _damage;
+    public int _blockstun;
+    public int _hitstun;
 
 
-    public int _startup = 0;
-    public int _duration=0;
-    public int _recovery=0;
+    public int _startup;
+    public int _duration;
+    public int _recovery;
 
-    public int _inputWindow=0;
-    public int _inputTolerance=0;
+    public int _inputWindow;
+    public int _inputTolerance;
     public IntPair[] _input_vir;
     [NonSerialized]
-    public byte[] _inputs; 
-
+    public byte[] _inputs;
+    public int _total_duration;
+    
     public Attack(int inWin,int inTol,byte[] inBytes,Vector2 position, Vector2 size, float damage, int blockstun, int hitstun ,int startup, int duration,int recovery)
     {
         _inputWindow = inWin;
@@ -52,6 +59,8 @@ public class Attack
         _duration = duration;
         _recovery = recovery;
         _inputs = Translate(_input_vir);
+
+        _total_duration = startup + duration + recovery;
     }
     public Attack()
     {
@@ -84,9 +93,13 @@ public class Attack
             else if (button == 4) { button_b = 0b00010000; } // special (south)
 
             output[i] = dir_b |= button_b;
+            Debug.Log(output[i]);
         }
         return (output);
     }
-
+    public void Init()
+    {
+        _inputs = Translate(_input_vir);
+    }
 
 }

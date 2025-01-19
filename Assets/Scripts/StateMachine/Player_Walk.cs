@@ -20,7 +20,7 @@ public class Player_Walk : PlayerState
 
         Context._movementState = "Walking";
         _rev = Context._player.rev;
-        _x_axis_blocked = Context._player.x_axis_blocked;
+        
         _moveSpeed = Context._moveSpeed;
         _moveSpeed_back = _moveSpeed * 0.7f;
 
@@ -47,9 +47,18 @@ public class Player_Walk : PlayerState
     }
     public override void UpdateState() {
 
-
+        _x_axis_blocked = Context._player.x_axis_blocked;
         _moveInput = Input.GetAxisRaw(Context._player._MH_in);
-        if (!(_moveInput > 0 && _rev && _x_axis_blocked) && !(_moveInput < 0 && !_rev && _x_axis_blocked))
+        if (Context._isBlocking)
+        {
+            nextStateKey = PlayerStateMachine.EPlayerState.Blocking;
+        }
+        if (Context.isAttacking)
+        {
+            Context.isAttacking = false;
+            nextStateKey = PlayerStateMachine.EPlayerState.Attacking;
+
+        }else if (!(_moveInput > 0 && _rev && _x_axis_blocked) && !(_moveInput < 0 && !_rev && _x_axis_blocked))
         {
             if (Context._player.isBlocking)
             {

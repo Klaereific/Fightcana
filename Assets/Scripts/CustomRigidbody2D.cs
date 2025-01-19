@@ -16,11 +16,13 @@ public class CustomRigidbody2D
     private GameObject _playerGo;
     private Player _player;
 
-    public CustomRigidbody2D(float size_x, float size_y, GameObject player,float margin)
+    public CustomRigidbody2D(float size_x, float size_y, float pos_x, float pos_y, GameObject player,float margin)
     {
         
         size.x=size_x+(margin*2);
         size.y=size_y;
+        position.x = pos_x;
+        position.y = pos_y;
         _playerGo = player;
         _player = _playerGo.GetComponent<Player>();
     }
@@ -79,18 +81,43 @@ public class CustomRigidbody2D
                 {
                     if(max.x > opponentBounds.min.x && !_player.rev)
                     {
-                        Debug.Log("set to left");
+                        //Debug.Log("set to left");
                         position.x = opponentBounds.min.x - size.x / 2;
                     }
                     if(min.x < opponentBounds.max.x && _player.rev)
                     {
+                        /*
                         Debug.Log("set to right");
                         Debug.Log(min.x);
                         Debug.Log(max.x);
                         Debug.Log(opponentBounds.min.x);
                         Debug.Log(opponentBounds.max.x);
-                        
+                        */
                         position.x = opponentBounds.max.x + size.x / 2;
+                    }
+                    velocity.x = 0;
+                }
+            }
+            if (collider.gameObject.CompareTag("Wall"))
+            {
+                Bounds wallBounds = collider.bounds;
+                if (Mathf.Abs(velocity.x) > 0)
+                {
+                    if (max.x > wallBounds.min.x && max.x < wallBounds.max.x)
+                    {
+                        //Debug.Log("set to left");
+                        position.x = wallBounds.min.x - size.x / 2;
+                    }
+                    if (min.x > wallBounds.min.x && min.x < wallBounds.max.x)
+                    {
+                        /*
+                        Debug.Log("set to right");
+                        Debug.Log(min.x);
+                        Debug.Log(max.x);
+                        Debug.Log(wallBounds.min.x);
+                        Debug.Log(wallBounds.max.x);
+                        */
+                        position.x = wallBounds.max.x + size.x / 2;
                     }
                     velocity.x = 0;
                 }

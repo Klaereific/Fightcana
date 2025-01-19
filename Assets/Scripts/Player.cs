@@ -9,6 +9,8 @@ public class Player : MonoBehaviour
     public event OnHitHandler OnHit;
     public event OnHitHandler OnBlock;
 
+    public float height = 2.0f;
+    public float width = 1.0f;
 
     public float health;
     public bool x_axis_blocked=false;
@@ -22,6 +24,8 @@ public class Player : MonoBehaviour
 
     public string _MV_in = "MoveVertical1";
     public string _MH_in = "MoveHorizontal";
+
+
 
 
     private void Awake()

@@ -12,23 +12,24 @@ public class Hitbox : MonoBehaviour
     private bool hasHitPlayer = false;
     public Player sourcePlayer;
 
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        //Debug.Log("Collision");
+        Debug.Log("Collision");
         if (!hasHitPlayer && collision.gameObject.CompareTag("Player"))
         {
-            Player player = collision.GetComponent<Player>();
+            Player opponent = collision.gameObject.GetComponent<Player>();
 
-            if (player != null && player != sourcePlayer)
+            if (opponent != null && opponent != sourcePlayer)
             {
-                
-                player.TakeDamage(damage,hitstun);
+
+                opponent.TakeDamage(damage,hitstun);
                 hasHitPlayer = true;
             }
-            if (player != null && player != sourcePlayer && player.isBlocking)
+            if (opponent != null && opponent != sourcePlayer && opponent.isBlocking)
             {
 
-                player.GoIntoBlock(blockstun);
+                opponent.GoIntoBlock(blockstun);
                 hasHitPlayer = true;
             }
         }

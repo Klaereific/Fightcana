@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class PlayerStateContext
@@ -63,16 +64,21 @@ public class PlayerStateContext
     private float _rb_margin;
 
     public bool _isHit=false;
+    public bool _isBlocking = false;
     public Animator animator;
 
     public PlayerStateContext(GameObject playerGO,float moveSpeed,float jumpForce,float lowJumpMultiplier, float fallMultiplier, float angledJump,GameObject hitboxPref,float rb_margins)
     {
         playerTransform = playerGO.GetComponent<Transform>();
-        //playerTransform = playertransform;
-        _width = playerTransform.localScale.x;
-        _height = playerTransform.localScale.y;
-        customRb = new CustomRigidbody2D(_width, _height,playerGO, rb_margins);
-        customRb.position = playerTransform.position;
+        _player = playerGO.GetComponent<Player>();
+
+
+        _width = playerTransform.localScale.x * _player.width;
+        _height = playerTransform.localScale.y * _player.height;
+       
+
+        customRb = new CustomRigidbody2D(_width, _height, playerTransform.localPosition.x, playerTransform.localPosition.y , playerGO, rb_margins);
+        //customRb.position = playerTransform.position;
 
         _player = playerGO.GetComponent<Player>();
         //_player = player;
@@ -82,8 +88,10 @@ public class PlayerStateContext
         _lowJumpMultiplier = lowJumpMultiplier;
         _fallMultiplier = fallMultiplier;
         _angledJump = angledJump;
+        
         _p1_CP = playerGO.GetComponent<CharacterParameters>();
         _hitboxPrefab = hitboxPref;
+        _p1_CP.InitializeAttacks();
 
         _buffer = playerGO.GetComponent<InputBuffer>();
 
@@ -120,6 +128,7 @@ public class PlayerStateContext
     public void OnBlock(object source, int Block_Stun)
     {
         _blockStun = Block_Stun;
+        _isBlocking = true;
     }
 
     public void OnHit(object source, int Hit_Stun)

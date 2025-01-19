@@ -38,7 +38,7 @@ public class GameHandler : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-        max_distance = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>().orthographicSize * 2;
+        max_distance = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>().orthographicSize * 4;
         player1 = player1_GO.GetComponent<Player>();
         player2 = player2_GO.GetComponent<Player>();
     }

@@ -9,7 +9,7 @@ public class AnimationDurationController : MonoBehaviour
     private string animationName; // Name of the animation state
     private float desiredDuration = 1.0f; // Desired duration in seconds
     public GameObject playerGO;
-
+    public float SpeedMultiplier;
 
     void Start()
     {

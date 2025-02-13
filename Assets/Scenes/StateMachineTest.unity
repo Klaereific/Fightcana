@@ -11558,7 +11558,7 @@ MonoBehaviour:
       button: 1
     _total_duration: 0
   - _name: Jab
-    _animationKey: idle_light
+    _animationKey: Jab
     _animationForm: 0
     _position: {x: 1, y: 1.25}
     _size: {x: 1.2, y: 0.4}
@@ -11576,7 +11576,7 @@ MonoBehaviour:
     _total_duration: 0
   gNorth_attackDict:
   - _name: StandingMid
-    _animationKey: idle_mid
+    _animationKey: Standing_Mid
     _animationForm: 1
     _position: {x: 1.2, y: 1.2}
     _size: {x: 1.2, y: 1.2}
@@ -11594,7 +11594,7 @@ MonoBehaviour:
     _total_duration: 0
   gEast_attackDict:
   - _name: StandingHeavy
-    _animationKey: idle_heavy
+    _animationKey: Standing_Heavy
     _animationForm: 2
     _position: {x: 1.3, y: 1.2}
     _size: {x: 2.7, y: 1}

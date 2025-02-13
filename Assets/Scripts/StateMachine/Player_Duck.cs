@@ -20,9 +20,17 @@ public class Player_Duck : PlayerState
         nextStateKey = PlayerStateMachine.EPlayerState.Duck;
     }
     public override void UpdateState() {
-        if (Input.GetAxis(Context._player._MV_in)>-0.5f)
+        if (Input.GetAxis(Context._player._MV_in) > -0.5f)
         {
             nextStateKey = PlayerStateMachine.EPlayerState.Idle;
+        }
+        else if (Input.GetAxis(Context._player._MH_in) < 0.3f)
+        {
+            Context._player.isBlocking = true;
+        }
+        else
+        {
+            Context._player.isBlocking = true;
         }
     }
     public override PlayerStateMachine.EPlayerState GetNextState()

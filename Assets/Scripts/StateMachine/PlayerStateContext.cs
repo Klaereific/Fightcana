@@ -80,7 +80,7 @@ public class PlayerStateContext
         customRb = new CustomRigidbody2D(_width, _height, playerTransform.localPosition.x, playerTransform.localPosition.y , playerGO, rb_margins);
         //customRb.position = playerTransform.position;
 
-        _player = playerGO.GetComponent<Player>();
+        //_player = playerGO.GetComponent<Player>();
         //_player = player;
         _movementState = "Idle";
         _moveSpeed = moveSpeed;

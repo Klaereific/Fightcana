@@ -1,6 +1,9 @@
 using System;
+using System.Drawing;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEditor.Experimental.GraphView.GraphView;
+using UnityEngine.UIElements;
 
 public class Hitbox : MonoBehaviour
 {
@@ -34,6 +37,50 @@ public class Hitbox : MonoBehaviour
             }
         }
     }
+
+    private void FixedUpdate()
+    {
+        if (hitstun != 0 && blockstun != 0 && !hasHitPlayer)
+        {
+            DetectAndResolveCollisions();
+        }
+    }
+
+    private void DetectAndResolveCollisions()
+    {
+        // Implement basic AABB collision detection and resolution with ground
+
+        // Get the bounds of the player
+        Vector2 min = transform.position - transform.localScale / 2;
+        Vector2 max = transform.position + transform.localScale / 2;
+
+        // Check for collisions with ground objects
+        Collider2D[] colliders = Physics2D.OverlapBoxAll(transform.position, transform.localScale, 0.0f);
+        Debug.Log("Collision");
+        foreach (var collider in colliders)
+        {
+            if (collider.CompareTag("Player"))
+            {
+                // Get bounds of the ground object
+                Player opponent = collider.gameObject.GetComponent<Player>();
+
+                if (opponent != null && opponent != sourcePlayer)
+                {
+                    if (opponent.isBlocking)
+                    {
+                        opponent.GoIntoBlock(blockstun);
+                        hasHitPlayer = true;
+                    }
+                    else
+                    {
+                        opponent.TakeDamage(damage, hitstun);
+                        hasHitPlayer = true;
+                    }
+                }
+            }
+        }
+    }
+    //private void OnDestroy()
 
     private void OnTriggerExit2D(Collider2D collision)
     {

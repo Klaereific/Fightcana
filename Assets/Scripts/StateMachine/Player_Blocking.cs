@@ -15,12 +15,19 @@ public class Player_Blocking : PlayerState
         _blockStun = Context._blockStun;
         Context.customRb.velocity.x = 0f;
         Context.animator.SetInteger("State", 4);
+        if (Input.GetAxis(Context._player._MV_in) < -0.5f){
+            Context.animator.SetInteger("Form", 1);
+        }
+        else{
+            Context.animator.SetInteger("Form", 0);
+        }
     }
     public override void ExitState() {
         nextStateKey = PlayerStateMachine.EPlayerState.Blocking;
     }
     public override void UpdateState() {
         _blockStun --;
+        Debug.Log(_blockStun);
         if(_blockStun == 0){
             nextStateKey = PlayerStateMachine.EPlayerState.Idle;
             Context._isBlocking = false;

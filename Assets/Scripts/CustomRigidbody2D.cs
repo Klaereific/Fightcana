@@ -16,15 +16,19 @@ public class CustomRigidbody2D
     private GameObject _playerGo;
     private Player _player;
 
-    public CustomRigidbody2D(float size_x, float size_y, float pos_x, float pos_y, GameObject player,float margin)
+    public CustomRigidbody2D(float size_x, float size_y, float pos_x, float pos_y, GameObject playerGO,float margin)
     {
         
         size.x=size_x+(margin*2);
         size.y=size_y;
         position.x = pos_x;
         position.y = pos_y;
-        _playerGo = player;
+        _playerGo = playerGO;
         _player = _playerGo.GetComponent<Player>();
+        BoxCollider2D BC = _playerGo.GetComponent<BoxCollider2D>();
+        BC.size = size;
+        BC.offset = new Vector2(0, (size.y - 1) / 2);
+
     }
 
     public void ApplyForce(Vector2 force)

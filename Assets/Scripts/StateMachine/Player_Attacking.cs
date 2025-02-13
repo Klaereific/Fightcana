@@ -65,18 +65,18 @@ public class Player_Attacking : PlayerState
         if (frame_count == 1) {
             //Debug.Log("Startup");
             //Debug.Log(frame_count);
-            PlayerStateMachine.SpawnHitbox(Context._hitboxPrefab, Context._player, Context.customRb.position + position, Context.playerTransform.rotation, size, 0, 0 ,0 , (float)startup / 60f, Color.blue);
+            PlayerStateMachine.SpawnHitbox(Context._hitboxPrefab, Context._player, (Vector2)Context.playerTransform.position + position, Context.playerTransform.rotation, size, 0, 0 ,0 , (float)startup / 60f, Color.blue);
         }
         if (frame_count == (startup + 1)) {
             //Debug.Log("Attack");
             //Debug.Log(frame_count);
-            PlayerStateMachine.SpawnHitbox(Context._hitboxPrefab, Context._player, Context.customRb.position + position, Context.playerTransform.rotation, size, damage, blockstun, hitstun, (float)duration / 60f, Color.red);
+            PlayerStateMachine.SpawnHitbox(Context._hitboxPrefab, Context._player, (Vector2)Context.playerTransform.position + position, Context.playerTransform.rotation, size, damage, blockstun, hitstun, (float)duration / 60f, Color.red);
         }
         if (frame_count == (duration + startup + 1))
         {
             //Debug.Log("Recovery");
             //Debug.Log(frame_count);
-            PlayerStateMachine.SpawnHitbox(Context._hitboxPrefab, Context._player, Context.customRb.position + position, Context.playerTransform.rotation, size, 0, 0, 0, (float)recovery / 60f, Color.grey);
+            PlayerStateMachine.SpawnHitbox(Context._hitboxPrefab, Context._player, (Vector2)Context.playerTransform.position + position, Context.playerTransform.rotation, size, 0, 0, 0, (float)recovery / 60f, Color.grey);
         }
         if(frame_count > (startup + duration + recovery))
         {

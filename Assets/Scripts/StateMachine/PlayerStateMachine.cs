@@ -99,7 +99,10 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
     {
         base.FixedUpdate();
         _context.customRb.UpdatePhysics(Time.fixedDeltaTime);
-        playerGO.transform.position = _context.customRb.position;
+        Vector2 adj_pos = _context.customRb.position;
+        adj_pos.y = _context.customRb.position.y - ((_context.customRb.size.y - 1) / 2);
+        playerGO.transform.position = adj_pos;
+        
         if (player.rev)
         {
             if (!flipped)
@@ -125,8 +128,8 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
     {
 
         //UpdateInput();
-        DrawCube(transform.position,_context.customRb.size,Color.green);
-        DrawCube(_context.customRb.position, _context.customRb.size, Color.red);
+        //DrawBox(transform.position,_context.customRb.size,Color.green);
+        DrawBox(_context.customRb.position, _context.customRb.size, Color.red);
         //Debug.Log(_context._player.isBlocking);
     }
 
@@ -172,7 +175,7 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
         //Debug.Log("Light attack pressed");
     }
     
-    public void DrawCube(Vector2 position, Vector2 size,Color color)
+    public void DrawBox(Vector2 position, Vector2 size,Color color)
     {
         Vector2 br = new Vector2(position.x + size.x / 2, position.y - size.y / 2);
         Vector2 bl = new Vector2(position.x - size.x / 2, position.y - size.y / 2);

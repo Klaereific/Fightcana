@@ -35,6 +35,7 @@ public class PlayerStateContext
 
     public bool isAttacking;
     // ducking check
+    public bool _isCrouching;
 
     // groundCheck circle 
     public Transform groundCheck;
@@ -60,6 +61,9 @@ public class PlayerStateContext
     public int _blockStun;
     public int _hitStun;
     public int _knockStun;
+
+    public float _hitForce;
+    public float _blockForce;
 
     private float _rb_margin;
 
@@ -98,12 +102,12 @@ public class PlayerStateContext
         _buffer.InitializeBuffer(40, _player);
         _buffer.StartBuffer();
 
-        _buffer.OnButtonInput += OnButtonInput;
+        _buffer.OnButtonInput += OnButtonInput; 
 
         _hitbox = hitboxPref.GetComponent<Hitbox>();
-        _player.OnHit += OnHit;
+        _player.OnHit += OnHit;                     // subscribes to event handler in player
 
-        _player.OnBlock += OnBlock;
+        _player.OnBlock += OnBlock;                 // subscribes to event handler in player
 
         animator = playerGO.GetComponent<Animator>();
 
@@ -125,15 +129,17 @@ public class PlayerStateContext
         _buffer_state = buffer_state;
     }
 
-    public void OnBlock(object source, int Block_Stun)
+    public void OnBlock(object source, int Block_Stun, float blockForce)  // is called by player & updates values
     {
         _blockStun = Block_Stun;
         _isBlocking = true;
+        _blockForce = blockForce;
     }
 
-    public void OnHit(object source, int Hit_Stun)
+    public void OnHit(object source, int Hit_Stun, float hitForce)      // is called by player & updates values
     {
         _hitStun = Hit_Stun;
         _isHit = true;
+        _hitForce = hitForce;
     }
 }

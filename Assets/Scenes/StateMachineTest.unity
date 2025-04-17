@@ -10702,6 +10702,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 1490718943}
   playerGO: {fileID: 1490718935}
+  SpeedMultiplier: 0
 --- !u!4 &922280672
 Transform:
   m_ObjectHideFlags: 0
@@ -11519,6 +11520,8 @@ MonoBehaviour:
     _damage: 2
     _blockstun: 25
     _hitstun: 40
+    _blockForce: 0
+    _hitForce: 0
     _startup: 25
     _duration: 50
     _recovery: 30
@@ -11542,6 +11545,8 @@ MonoBehaviour:
     _damage: 5
     _blockstun: 40
     _hitstun: 80
+    _blockForce: 0
+    _hitForce: 0
     _startup: 30
     _duration: 60
     _recovery: 20
@@ -11564,7 +11569,9 @@ MonoBehaviour:
     _size: {x: 1.2, y: 0.4}
     _damage: 5
     _blockstun: 40
-    _hitstun: 60
+    _hitstun: 20
+    _blockForce: 0
+    _hitForce: 0
     _startup: 10
     _duration: 20
     _recovery: 10
@@ -11582,7 +11589,9 @@ MonoBehaviour:
     _size: {x: 1.2, y: 1.2}
     _damage: 10
     _blockstun: 50
-    _hitstun: 60
+    _hitstun: 40
+    _blockForce: 0
+    _hitForce: 0
     _startup: 15
     _duration: 30
     _recovery: 15
@@ -11601,6 +11610,8 @@ MonoBehaviour:
     _damage: 30
     _blockstun: 60
     _hitstun: 80
+    _blockForce: 0
+    _hitForce: 0
     _startup: 20
     _duration: 50
     _recovery: 20
@@ -11615,9 +11626,66 @@ MonoBehaviour:
   aNorth_attackDict: []
   aEast_attackDict: []
   aSouth_attackDict: []
-  cWest_attackDict: []
-  cNorth_attackDict: []
-  cEast_attackDict: []
+  cWest_attackDict:
+  - _name: Crouching_light
+    _animationKey: Crouching_light
+    _animationForm: 1
+    _position: {x: -0.5, y: -3}
+    _size: {x: 1, y: 4}
+    _damage: 20
+    _blockstun: 10
+    _hitstun: 30
+    _blockForce: 10
+    _hitForce: 10
+    _startup: 20
+    _duration: 30
+    _recovery: 10
+    _inputWindow: 3
+    _inputTolerance: 3
+    _input_vir:
+    - dir: 2
+      button: 1
+    _total_duration: 0
+  cNorth_attackDict:
+  - _name: Crouching_mid
+    _animationKey: Crouching_mid
+    _animationForm: 0
+    _position: {x: 0, y: 0}
+    _size: {x: 0, y: 0}
+    _damage: 30
+    _blockstun: 20
+    _hitstun: 40
+    _blockForce: 20
+    _hitForce: 20
+    _startup: 40
+    _duration: 50
+    _recovery: 40
+    _inputWindow: 3
+    _inputTolerance: 3
+    _input_vir:
+    - dir: 2
+      button: 2
+    _total_duration: 0
+  cEast_attackDict:
+  - _name: Crouching_heavy
+    _animationKey: Crouching_heavy
+    _animationForm: 2
+    _position: {x: 0, y: 0}
+    _size: {x: 0, y: 0}
+    _damage: 40
+    _blockstun: 30
+    _hitstun: 50
+    _blockForce: 30
+    _hitForce: 30
+    _startup: 50
+    _duration: 60
+    _recovery: 40
+    _inputWindow: 3
+    _inputTolerance: 3
+    _input_vir:
+    - dir: 2
+      button: 3
+    _total_duration: 0
   cSouth_attackDict: []
 --- !u!1 &1581233205
 GameObject:
@@ -12554,6 +12622,8 @@ MonoBehaviour:
     _damage: 2
     _blockstun: 25
     _hitstun: 40
+    _blockForce: 0
+    _hitForce: 0
     _startup: 25
     _duration: 50
     _recovery: 30
@@ -12577,6 +12647,8 @@ MonoBehaviour:
     _damage: 5
     _blockstun: 40
     _hitstun: 80
+    _blockForce: 0
+    _hitForce: 0
     _startup: 30
     _duration: 60
     _recovery: 20
@@ -12600,6 +12672,8 @@ MonoBehaviour:
     _damage: 5
     _blockstun: 40
     _hitstun: 60
+    _blockForce: 0
+    _hitForce: 0
     _startup: 10
     _duration: 20
     _recovery: 10
@@ -12618,6 +12692,8 @@ MonoBehaviour:
     _damage: 10
     _blockstun: 50
     _hitstun: 60
+    _blockForce: 0
+    _hitForce: 0
     _startup: 15
     _duration: 30
     _recovery: 15
@@ -12636,6 +12712,8 @@ MonoBehaviour:
     _damage: 30
     _blockstun: 60
     _hitstun: 80
+    _blockForce: 0
+    _hitForce: 0
     _startup: 20
     _duration: 50
     _recovery: 20

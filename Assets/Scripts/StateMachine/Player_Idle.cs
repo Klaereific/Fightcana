@@ -14,6 +14,7 @@ public class Player_Idle : PlayerState
         Context.customRb.velocity.x = 0f;
         Context._movementState = "Idle";
         Context._player.isBlocking = false;
+        Context._isCrouching = false;
         Context.animator.SetInteger("State", 0);
         Context.animator.SetInteger("Form", 0);
     }

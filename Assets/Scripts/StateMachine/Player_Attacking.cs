@@ -17,6 +17,8 @@ public class Player_Attacking : PlayerState
     int frame_count;
     int hitstun;
     int blockstun;
+    float hitForce;
+    float blockForce;
 
     
 
@@ -48,11 +50,20 @@ public class Player_Attacking : PlayerState
         damage = attack._damage;
         hitstun = attack._hitstun;
         blockstun = attack._blockstun;
+        hitForce = attack._hitForce;
+        blockForce = attack._blockForce;
         if (Context._player.rev)
         {
             position.x *= -1;
         }
-        Context.animator.SetInteger("State", 5);
+        if (Context._movementState == "Crouching")
+        {
+            Context.animator.SetInteger("State", 6);
+        }
+        else
+        {
+            Context.animator.SetInteger("State", 5);
+        }
         Context.animator.SetInteger("Form", attack._animationForm);
     }
     public override void ExitState()
@@ -62,25 +73,36 @@ public class Player_Attacking : PlayerState
     public override void UpdateState()
     {
         frame_count += 1;
+        if (Context._isHit)
+        {
+            nextStateKey = PlayerStateMachine.EPlayerState.Hit;
+        }
         if (frame_count == 1) {
             //Debug.Log("Startup");
             //Debug.Log(frame_count);
-            PlayerStateMachine.SpawnHitbox(Context._hitboxPrefab, Context._player, (Vector2)Context.playerTransform.position + position, Context.playerTransform.rotation, size, 0, 0 ,0 , (float)startup / 60f, Color.blue);
+            PlayerStateMachine.SpawnHitbox(Context._hitboxPrefab, Context._player, (Vector2)Context.playerTransform.position + position, Context.playerTransform.rotation, size, 0, 0 ,0 ,0, 0, (float)startup / 60f, Color.blue);
         }
         if (frame_count == (startup + 1)) {
             //Debug.Log("Attack");
             //Debug.Log(frame_count);
-            PlayerStateMachine.SpawnHitbox(Context._hitboxPrefab, Context._player, (Vector2)Context.playerTransform.position + position, Context.playerTransform.rotation, size, damage, blockstun, hitstun, (float)duration / 60f, Color.red);
+            PlayerStateMachine.SpawnHitbox(Context._hitboxPrefab, Context._player, (Vector2)Context.playerTransform.position + position, Context.playerTransform.rotation, size, damage, blockstun, hitstun, blockForce,hitForce, (float)duration / 60f, Color.red);
         }
         if (frame_count == (duration + startup + 1))
         {
             //Debug.Log("Recovery");
             //Debug.Log(frame_count);
-            PlayerStateMachine.SpawnHitbox(Context._hitboxPrefab, Context._player, (Vector2)Context.playerTransform.position + position, Context.playerTransform.rotation, size, 0, 0, 0, (float)recovery / 60f, Color.grey);
+            PlayerStateMachine.SpawnHitbox(Context._hitboxPrefab, Context._player, (Vector2)Context.playerTransform.position + position, Context.playerTransform.rotation, size, 0, 0, 0, 0, 0, (float)recovery / 60f, Color.grey);
         }
         if(frame_count > (startup + duration + recovery))
         {
-            nextStateKey = PlayerStateMachine.EPlayerState.Idle;
+            if (Context._movementState == "Crouching")
+            {
+                nextStateKey = PlayerStateMachine.EPlayerState.Duck;
+            }
+            else
+            {
+                nextStateKey = PlayerStateMachine.EPlayerState.Idle;
+            }
             Context.isAttacking = false;
         }
     }

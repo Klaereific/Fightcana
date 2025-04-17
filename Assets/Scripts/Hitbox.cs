@@ -12,6 +12,8 @@ public class Hitbox : MonoBehaviour
     public float damage = 10f;  // Damage dealt to the player
     public int hitstun = 0;
     public int blockstun = 0;
+    public float hitForce = 0;
+    public float blockForce = 0;
     private bool hasHitPlayer = false;
     public Player sourcePlayer;
 
@@ -26,13 +28,13 @@ public class Hitbox : MonoBehaviour
             if (opponent != null && opponent != sourcePlayer)
             {
 
-                opponent.TakeDamage(damage,hitstun);
+                opponent.TakeDamage(damage, hitstun, hitForce);
                 hasHitPlayer = true;
             }
             if (opponent != null && opponent != sourcePlayer && opponent.isBlocking)
             {
 
-                opponent.GoIntoBlock(blockstun);
+                opponent.GoIntoBlock(blockstun, blockForce);
                 hasHitPlayer = true;
             }
         }
@@ -68,12 +70,12 @@ public class Hitbox : MonoBehaviour
                 {
                     if (opponent.isBlocking)
                     {
-                        opponent.GoIntoBlock(blockstun);
+                        opponent.GoIntoBlock(blockstun, blockForce);
                         hasHitPlayer = true;
                     }
                     else
                     {
-                        opponent.TakeDamage(damage, hitstun);
+                        opponent.TakeDamage(damage, hitstun, hitForce);
                         hasHitPlayer = true;
                     }
                 }

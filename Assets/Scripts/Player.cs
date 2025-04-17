@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public delegate void OnHitHandler(object source, int hitstun);
+    public delegate void OnHitHandler(object source, int hitstun,float hitForce);
 
     public event OnHitHandler OnHit;
     public event OnHitHandler OnBlock;
@@ -34,12 +34,12 @@ public class Player : MonoBehaviour
         
     }
     
-    public void TakeDamage(float damage, int hitstun)
+    public void TakeDamage(float damage, int hitstun, float hitForce)
     {
         health -= damage;
         health = Mathf.Clamp(health, 0, 100);
         Debug.Log("Player Health: " + health);
-        OnHit?.Invoke(this, hitstun);
+        OnHit?.Invoke(this, hitstun, hitForce);                 // invokes method to transfer values to context
         if (health <= 0)
         {
             // Handle player death
@@ -47,9 +47,9 @@ public class Player : MonoBehaviour
         }
         
     }
-    public void GoIntoBlock(int blockstun)
+    public void GoIntoBlock(int blockstun, float blockForce)
     {
-        OnBlock?.Invoke(this, blockstun);
+        OnBlock?.Invoke(this, blockstun, blockForce);           // invokes method to transfer values to context
     }
 
     public byte GetInput()

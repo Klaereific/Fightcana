@@ -53,7 +53,12 @@ public class Player_Walk : PlayerState
         {
             nextStateKey = PlayerStateMachine.EPlayerState.Blocking;
         }
-        if (Context.isAttacking)
+        else if (Context._isHit)
+        {
+            nextStateKey = PlayerStateMachine.EPlayerState.Hit;
+            Context._isHit = false;
+        }
+        else if (Context.isAttacking)
         {
             Context.isAttacking = false;
             nextStateKey = PlayerStateMachine.EPlayerState.Attacking;

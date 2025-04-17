@@ -29,6 +29,9 @@ public class Attack
     public int _blockstun;
     public int _hitstun;
 
+    public float _blockForce;
+    public float _hitForce;
+
 
     public int _startup;
     public int _duration;
@@ -41,7 +44,7 @@ public class Attack
     public byte[] _inputs;
     public int _total_duration;
     
-    public Attack(int inWin,int inTol,byte[] inBytes,Vector2 position, Vector2 size, float damage, int blockstun, int hitstun ,int startup, int duration,int recovery)
+    public Attack(int inWin,int inTol,byte[] inBytes,Vector2 position, Vector2 size, float damage, int blockstun, int hitstun , float blockForce, float hitForce, int startup, int duration,int recovery)
     {
         _inputWindow = inWin;
         _inputTolerance = inTol;
@@ -54,6 +57,9 @@ public class Attack
         _damage = damage;
         _blockstun = blockstun; 
         _hitstun = hitstun;
+
+        _blockForce = blockForce;
+        _hitForce = hitForce; 
 
         _startup = startup;
         _duration = duration;

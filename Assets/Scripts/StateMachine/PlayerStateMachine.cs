@@ -155,7 +155,7 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
     }*/
 
 
-    public static void SpawnHitbox(GameObject hitboxPrefab,Player player,Vector3 position, Quaternion rotation, Vector2 size, float damage, int blockstun, int hitstun, float duration, Color color)
+    public static void SpawnHitbox(GameObject hitboxPrefab,Player player,Vector3 position, Quaternion rotation, Vector2 size, float damage, int blockstun, int hitstun, float blockForce, float hitForce,  float duration, Color color)
     {
         // Debug.Log(duration*60);
         GameObject hitbox = Instantiate(hitboxPrefab, position, rotation);
@@ -167,6 +167,8 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
         hitbox.GetComponent<Hitbox>().sourcePlayer = player;
         hitbox.GetComponent<Hitbox>().hitstun = hitstun;
         hitbox.GetComponent<Hitbox>().blockstun = blockstun;
+        hitbox.GetComponent<Hitbox>().blockForce = blockForce;
+        hitbox.GetComponent<Hitbox>().hitForce = hitForce;
         Destroy(hitbox, duration);  // Destroy the hitbox after 0.5 seconds to simulate attack duration
     }
 

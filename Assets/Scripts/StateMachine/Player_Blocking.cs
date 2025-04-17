@@ -4,6 +4,7 @@ using System;
 public class Player_Blocking : PlayerState
 {
     int _blockStun;
+    Vector2 pushback;
     public Player_Blocking(PlayerStateContext context, PlayerStateMachine.EPlayerState estate) : base(context, estate)
     {
         
@@ -21,12 +22,20 @@ public class Player_Blocking : PlayerState
         else{
             Context.animator.SetInteger("Form", 0);
         }
+        pushback = new Vector2(Context._blockForce * (Context._player.rev ? 1 : -1), 0);
+
     }
     public override void ExitState() {
         nextStateKey = PlayerStateMachine.EPlayerState.Blocking;
     }
     public override void UpdateState() {
         _blockStun --;
+        Context.customRb.velocity = pushback;
+        pushback *= 0.8f;
+        if (pushback.magnitude < 0.2)
+        {
+            pushback = new Vector2(0, 0);
+        }
         Debug.Log(_blockStun);
         if(_blockStun == 0){
             nextStateKey = PlayerStateMachine.EPlayerState.Idle;

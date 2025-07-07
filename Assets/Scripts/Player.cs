@@ -25,8 +25,7 @@ public class Player : MonoBehaviour
     public string _MV_in = "MoveVertical1";
     public string _MH_in = "MoveHorizontal";
 
-
-
+    public CardManager cardManager; // Assign this in the Inspector or via script
 
     private void Awake()
     {
@@ -69,4 +68,39 @@ public class Player : MonoBehaviour
         
     }
     
+    void Update()
+    {
+        bool r1 = Input.GetKey(KeyCode.JoystickButton5);
+
+        if (r1 && Input.GetKeyDown(KeyCode.JoystickButton0)) {
+            // R1 + Square
+            UseCard(0);
+        }
+        if (r1 && Input.GetKeyDown(KeyCode.JoystickButton3)) {
+            // R1 + Triangle
+            UseCard(1);
+        }
+        if (r1 && Input.GetKeyDown(KeyCode.JoystickButton1)) {
+            // R1 + X
+            UseCard(2);
+        }
+        if (r1 && Input.GetKeyDown(KeyCode.JoystickButton2)) {
+            // R1 + Circle
+            UseCard(3);
+        }
+    }
+
+    void UseCard(int cardIndex)
+    {
+        if (cardManager == null) return;
+        if (cardIndex < 0 || cardIndex >= cardManager.hand.Count) return;
+
+        Card cardToUse = cardManager.hand[cardIndex];
+
+        // Do something with the card (e.g., apply its effect)
+        Debug.Log("Used card: " + cardToUse.name);
+
+        // Discard the card
+        cardManager.DiscardCard(cardToUse);
+    }
 }

@@ -50,27 +50,63 @@ public class CardManager : MonoBehaviour
 {
     public CardCollection deck = new CardCollection();
     public CardCollection discard = new CardCollection();
+    public Queue<Card> graveyard = new Queue<Card>();
 
     public List<Card> hand = new List<Card>();
     public int HandSize = 4;
+    public int DiscardSize = 4;
+
+    void Start()
+    {
+        // Hardcoded deck: 15 cards named and described 1 to 15
+        List<Card> allCards = new List<Card>();
+        for (int i = 1; i <= 15; i++)
+        {
+            allCards.Add(new Card { name = i.ToString(), description = i.ToString(), type = rarity.common });
+        }
+
+        // Shuffle with a fixed seed for determinism
+        System.Random rng = new System.Random(12345); // Use any fixed seed
+        int n = allCards.Count;
+        while (n > 1)
+        {
+            n--;
+            int k = rng.Next(n + 1);
+            Card value = allCards[k];
+            allCards[k] = allCards[n];
+            allCards[n] = value;
+        }
+        foreach (var card in allCards)
+            deck.Add(card);
+
+        // Draw initial hand
+        for (int i = 0; i < HandSize; i++)
+            DrawCard();
+    }
 
     public void DrawCard()
     {
         if (hand.Count >= HandSize) return;
         Card drawn = deck.Draw();
         if (drawn != null)
-        {
             hand.Add(drawn);
-        }
     }
+
     public void DiscardCard(Card card)
     {
         if (hand.Contains(card))
         {
             hand.Remove(card);
+
+            // FIFO discard logic
+            if (discard.cards.Count >= DiscardSize)
+            {
+                Card oldest = discard.cards.Dequeue();
+                graveyard.Enqueue(oldest);
+            }
             discard.Add(card);
-        }    
-    }       
+        }
+    }
 }
 //One bar or two bars. discard graveyard they do not come back.
 //Order: Cards(total) -> Deck -> Hand -> Discard -> Graveyard

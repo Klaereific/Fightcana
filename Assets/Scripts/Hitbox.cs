@@ -28,15 +28,15 @@ public class Hitbox : MonoBehaviour
 
             if (opponent != null && opponent != sourcePlayer)
             {
-                Debug.Log($"HITBOX: Collided with {opponent.name}. Sending damage: {damage}, hitstun: {hitstun}");
+                // Debug.Log($"HITBOX: Collided with {opponent.name}. Sending damage: {damage}, hitstun: {hitstun}");
                 if (opponent.isBlocking)
                 {
-                    Debug.Log("Hit was BLOCKED by " + opponent.name);
+                    // Debug.Log("Hit was BLOCKED by " + opponent.name);
                     opponent.GoIntoBlock(blockstun, blockForce);
                 }
                 else
                 {
-                    Debug.Log("Hit LANDED on " + opponent.name);
+                    // Debug.Log("Hit LANDED on " + opponent.name);
                     opponent.TakeDamage(damage, hitstun, hitForce);
                 }
 

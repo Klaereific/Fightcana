@@ -99,7 +99,7 @@ public class Attack
             else if (button == 4) { button_b = 0b00010000; } // special (south)
 
             output[i] = dir_b |= button_b;
-            Debug.Log(output[i]);
+            // Debug.Log(output[i]);
         }
         return (output);
     }

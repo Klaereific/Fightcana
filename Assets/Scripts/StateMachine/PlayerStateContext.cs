@@ -70,6 +70,20 @@ public class PlayerStateContext
     public bool _isHit=false;
     public bool _isBlocking = false;
     public Animator animator;
+    
+    // Ground checking method
+    public void UpdateGroundCheck()
+    {
+        if (groundCheck != null)
+        {
+            isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+        }
+        else
+        {
+            // Fallback: check if player is touching ground using custom rigidbody
+            isGrounded = customRb.velocity.y == 0 && customRb.position.y <= 0.1f;
+        }
+    }
 
     public PlayerStateContext(GameObject playerGO,float moveSpeed,float jumpForce,float lowJumpMultiplier, float fallMultiplier, float angledJump,GameObject hitboxPref,float rb_margins)
     {

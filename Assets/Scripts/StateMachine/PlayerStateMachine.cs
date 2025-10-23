@@ -126,7 +126,9 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
         }
     public void Update()
     {
-
+        // Update ground checking
+        _context.UpdateGroundCheck();
+        
         //UpdateInput();
         //DrawBox(transform.position,_context.customRb.size,Color.green);
         DrawBox(_context.customRb.position, _context.customRb.size, Color.red);

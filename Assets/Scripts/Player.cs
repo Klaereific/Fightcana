@@ -41,13 +41,13 @@ public class Player : MonoBehaviour
     {
         health -= damage;
         health = Mathf.Clamp(health, 0, 100);
-        Debug.Log($"TAKEDAMAGE: Firing OnHit event with hitstun: {hitstun}");
+        // Debug.Log($"TAKEDAMAGE: Firing OnHit event with hitstun: {hitstun}");
         OnHit?.Invoke(this, hitstun, hitForce);                 // invokes method to transfer values to context
         if (cardManager != null) cardManager.AddMeterOnHitTaken();
         if (health <= 0)
         {
             // Handle player death
-            Debug.Log("Player is dead!");
+            // Debug.Log("Player is dead!");
         }
         
     }
@@ -85,7 +85,7 @@ public class Player : MonoBehaviour
 
         frameCounter++;
         if (Input.GetKeyDown(KeyCode.JoystickButton5)) {
-            Debug.Log("R1 held");
+            // Debug.Log("R1 held");
         }
 
         if (cardManager == null) { return; }

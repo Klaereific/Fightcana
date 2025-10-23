@@ -63,6 +63,9 @@ public class InputBuffer : MonoBehaviour
 
     private void SFT()
     {
+        // Skip input processing when card modifier (R1) is held
+        if (Player.CardModifierHeld) return;
+        
         //Debug.Log("SFT");
         
         inputByte = _player.GetInput();

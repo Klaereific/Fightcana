@@ -13,11 +13,28 @@ public class Player_Hit : PlayerState
 
     public override void EnterState()
     {
-        Debug.Log("Enter hit state");
         _hitStun = Context._hitStun;
         _hitForce = Context._hitForce;
-        Context.animator.SetInteger("State", 4);
-        Context.animator.SetInteger("Form", 2);
+
+        Debug.Log($"PLAYER_HIT: Entered hit state with {_hitStun} frames of hitstun.");
+
+		Context.animator.SetInteger("State", 4);
+		// Choose hit animation form by posture:
+		// 0 = standing hit, 1 = crouch hit, 2 = air hit
+		bool isCrouching = Context._movementState == "Crouching" || Input.GetAxis(Context._player._MV_in) < -0.5f;
+		bool isAirborne = !Context.isGrounded;
+		if (isCrouching)
+		{
+			Context.animator.SetInteger("Form", 1);
+		}
+		else if (isAirborne)
+		{
+			Context.animator.SetInteger("Form", 2);
+		}
+		else
+		{
+			Context.animator.SetInteger("Form", 0);
+		}
 
         pushback = new Vector2(_hitForce * (Context._player.rev ? -1 : 1), 0);
 

@@ -20,33 +20,43 @@ public class Hitbox : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log("Collision");
-        if (!hasHitPlayer && collision.gameObject.CompareTag("Player"))
+        if (hasHitPlayer) return; // Exit if we've already hit something
+
+        if (collision.gameObject.CompareTag("Player"))
         {
             Player opponent = collision.gameObject.GetComponent<Player>();
 
             if (opponent != null && opponent != sourcePlayer)
             {
+                Debug.Log($"HITBOX: Collided with {opponent.name}. Sending damage: {damage}, hitstun: {hitstun}");
+                if (opponent.isBlocking)
+                {
+                    Debug.Log("Hit was BLOCKED by " + opponent.name);
+                    opponent.GoIntoBlock(blockstun, blockForce);
+                }
+                else
+                {
+                    Debug.Log("Hit LANDED on " + opponent.name);
+                    opponent.TakeDamage(damage, hitstun, hitForce);
+                }
 
-                opponent.TakeDamage(damage, hitstun, hitForce);
-                hasHitPlayer = true;
-            }
-            if (opponent != null && opponent != sourcePlayer && opponent.isBlocking)
-            {
-
-                opponent.GoIntoBlock(blockstun, blockForce);
-                hasHitPlayer = true;
+                if (sourcePlayer != null && sourcePlayer.cardManager != null)
+                {
+                    sourcePlayer.cardManager.AddMeterOnHitDealt();
+                }
+                Destroy(gameObject);
+                //hasHitPlayer = true; 
             }
         }
     }
 
-    private void FixedUpdate()
-    {
-        if (hitstun != 0 && blockstun != 0 && !hasHitPlayer)
-        {
-            DetectAndResolveCollisions();
-        }
-    }
+    //private void FixedUpdate()
+    //{
+    //    if (hitstun != 0 && blockstun != 0 && !hasHitPlayer)
+    //    {
+    //        DetectAndResolveCollisions();
+    //    }
+    //}
 
     private void DetectAndResolveCollisions()
     {

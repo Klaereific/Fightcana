@@ -26,6 +26,10 @@ public class Player : MonoBehaviour
     public string _MH_in = "MoveHorizontal";
 
     public CardManager cardManager; // Assign this in the Inspector or via script
+    public Player opponent;
+    public static bool CardModifierHeld;
+
+    public bool enableCardInput = true;
 
     private void Awake()
     {
@@ -37,8 +41,9 @@ public class Player : MonoBehaviour
     {
         health -= damage;
         health = Mathf.Clamp(health, 0, 100);
-        Debug.Log("Player Health: " + health);
+        Debug.Log($"TAKEDAMAGE: Firing OnHit event with hitstun: {hitstun}");
         OnHit?.Invoke(this, hitstun, hitForce);                 // invokes method to transfer values to context
+        if (cardManager != null) cardManager.AddMeterOnHitTaken();
         if (health <= 0)
         {
             // Handle player death
@@ -68,39 +73,54 @@ public class Player : MonoBehaviour
         
     }
     
+    private int frameCounter = 0;
+
     void Update()
     {
-        bool r1 = Input.GetKey(KeyCode.JoystickButton5);
+        if (!enableCardInput) { return; }
 
-        if (r1 && Input.GetKeyDown(KeyCode.JoystickButton0)) {
-            // R1 + Square
-            UseCard(0);
+        bool r1 = Input.GetKey(KeyCode.JoystickButton5);
+        CardModifierHeld = r1;
+        if (!r1) { frameCounter = 0; return; }
+
+        frameCounter++;
+        if (Input.GetKeyDown(KeyCode.JoystickButton5)) {
+            Debug.Log("R1 held");
         }
-        if (r1 && Input.GetKeyDown(KeyCode.JoystickButton3)) {
-            // R1 + Triangle
-            UseCard(1);
+
+        if (cardManager == null) { return; }
+
+        // Neutral R1: draw new hand only if meter is full and current hand is empty
+        if (cardManager.hand.Count == 0 && Input.GetKeyDown(KeyCode.JoystickButton5)) {
+            cardManager.TryDrawNewHand();
+            return;
         }
-        if (r1 && Input.GetKeyDown(KeyCode.JoystickButton1)) {
-            // R1 + X
-            UseCard(2);
-        }
-        if (r1 && Input.GetKeyDown(KeyCode.JoystickButton2)) {
-            // R1 + Circle
-            UseCard(3);
-        }
+
+        // Map specific joystick buttons to hand indices using GetKeyDown and hand-size guards
+        if (cardManager.hand.Count > 0 && Input.GetKeyDown(KeyCode.JoystickButton0)) { UseCard(0); return; }
+        if (cardManager.hand.Count > 1 && Input.GetKeyDown(KeyCode.JoystickButton1)) { UseCard(1); return; }
+        if (cardManager.hand.Count > 2 && Input.GetKeyDown(KeyCode.JoystickButton2)) { UseCard(2); return; }
+        if (cardManager.hand.Count > 3 && Input.GetKeyDown(KeyCode.JoystickButton3)) { UseCard(3); return; }
+
+        // If your device maps face buttons to different indices, update the four lines above accordingly.
     }
 
     void UseCard(int cardIndex)
     {
-        if (cardManager == null) return;
-        if (cardIndex < 0 || cardIndex >= cardManager.hand.Count) return;
+        if (cardManager == null) { Debug.LogWarning("UseCard aborted: cardManager not assigned"); return; }
+        if (cardIndex < 0 || cardIndex >= cardManager.hand.Count) { Debug.LogWarning("UseCard aborted: index out of range"); return; }
 
-        Card cardToUse = cardManager.hand[cardIndex];
+        CardData cardToUse = cardManager.hand[cardIndex];
+        if (cardToUse == null) { Debug.LogWarning("UseCard aborted: null card at index"); return; }
 
-        // Do something with the card (e.g., apply its effect)
-        Debug.Log("Used card: " + cardToUse.name);
+        Player user = this;
+        Player target = cardToUse.Target == CardTarget.Support ? this : opponent;
 
-        // Discard the card
-        cardManager.DiscardCard(cardToUse);
+        Debug.Log($"UseCard idx={cardIndex}, handCount={cardManager.hand.Count}, card={cardToUse.name}, effect={(cardToUse.effect != null ? cardToUse.effect.name : "null")}, targetClass={cardToUse.Target}, target={(target != null ? target.name : "null")} ");
+
+        if (cardToUse.effect != null)
+            cardToUse.effect.Execute(user, target);
+
+        cardManager.ConsumeHandToGraveyard();
     }
 }

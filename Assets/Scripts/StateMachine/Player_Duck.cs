@@ -8,7 +8,7 @@ public class Player_Duck : PlayerState
     }
 
     public override void EnterState() {
-        Debug.Log("Enter Ducked state");
+        //Debug.Log("Enter Ducked state");
         Context.customRb.velocity.x = 0f;
         Context._movementState = "Crouching";
         Context.animator.SetInteger("State", 3);

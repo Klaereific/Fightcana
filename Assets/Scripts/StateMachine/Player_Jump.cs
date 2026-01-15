@@ -10,60 +10,75 @@ public class Player_Jump : PlayerState
         //PlayerStateContext Context = context;
     }
 
+    //public override void EnterState()
+    //{
+    //    //Debug.Log("Enter Jump state");
+    //    float moveInput = Input.GetAxis(Context._player._MH_in);
+    //    startHeight = Context.customRb.position.y;
+    //    isFalling = false;
+    //    Context._movementState = "Jumping";
+    //    Context.animator.SetInteger("State", 2);
+    //    if (Context.customRb.velocity.x > 0.1)
+    //    {
+    //        Context.animator.SetInteger("Form", 2);
+    //    }
+    //    else if (Context.customRb.velocity.x < -0.1)
+    //    {
+    //        Context.animator.SetInteger("Form", 3);
+    //    }
+    //    else
+    //    {
+    //        Context.animator.SetInteger("Form", 1);
+    //    }
+//
+//
+//
+    //    Jump(moveInput, Context);
+    //    //Context.jumpRequest = false;
+    //    
+    //}
     public override void EnterState()
     {
-        Debug.Log("Enter Jump state");
-        float moveInput = Input.GetAxis(Context._player._MH_in);
-        startHeight = Context.customRb.position.y;
-        isFalling = false;
         Context._movementState = "Jumping";
         Context.animator.SetInteger("State", 2);
-        if (Context.customRb.velocity.x > 0.1)
-        {
-            Context.animator.SetInteger("Form", 2);
-        }
-        else if (Context.customRb.velocity.x < -0.1)
-        {
-            Context.animator.SetInteger("Form", 3);
-        }
+
+        // 1. Record the start height (now -0.5f)
+        startHeight = Context.customRb.position.y;
+
+        // 2. Set the initial upward burst. 
+        // Do NOT add to velocity; set it directly to ensure consistency.
+        Context.customRb.velocity.y = Context._jumpForce;
+
+        // Handle horizontal animation variants
+        if (Mathf.Abs(Context.customRb.velocity.x) > 0.1f)
+            Context.animator.SetInteger("Form", Context.customRb.velocity.x > 0 ? 2 : 3);
         else
-        {
             Context.animator.SetInteger("Form", 1);
-        }
-
-
-
-        Jump(moveInput, Context);
-        //Context.jumpRequest = false;
-        
     }
+
+
     public override void ExitState() {
         Context.jumpRequest = false;
         nextStateKey = PlayerStateMachine.EPlayerState.Jump;
     }
     public override void UpdateState() {
-        float currHeight = Math.Abs(Context.customRb.position.y - startHeight);
-        if (Context.customRb.velocity.y < 0)
+        if (Context.customRb.velocity.y <= 0 && Context.customRb.position.y <= -0.49f)
         {
-            Context.customRb.velocity += Vector2.up * Physics2D.gravity.y * (Context._fallMultiplier - 1) * Time.deltaTime;
-            if (!isFalling)
-            {
-                isFalling = true;
-            }
+            nextStateKey = PlayerStateMachine.EPlayerState.Idle;
         }
-        else if (Context.customRb.velocity.y > 0 && Input.GetAxis(Context._player._MV_in)<0.5f)
-        {
-            Context.customRb.velocity += Vector2.up * Physics2D.gravity.y * (Context._lowJumpMultiplier - 1) * Time.deltaTime;
-        }
-        if (isFalling && currHeight< 0.01f)
-        {
-            nextStateKey= PlayerStateMachine.EPlayerState.Idle;
-        }
-        
-        else if (currHeight > 0.01f)
-        {
-            Context.customRb.velocity += Vector2.up * Physics2D.gravity.y * Time.deltaTime;
-        }
+        //else if (Context.customRb.velocity.y > 0 && Input.GetAxis(Context._player._MV_in)<0.5f)
+        //{
+        //    Context.customRb.velocity += Vector2.up * Physics2D.gravity.y * (Context._lowJumpMultiplier - 1) * Time.deltaTime;
+        //}
+        //if (isFalling && currHeight< 0.01f)
+        //{
+        //    nextStateKey= PlayerStateMachine.EPlayerState.Idle;
+        //}
+        //
+        //else if (currHeight > 0.01f)
+        //{
+        //    Context.customRb.velocity += Vector2.up * Physics2D.gravity.y * Time.deltaTime;
+        //}
         /*{
         if(Context.button_queue.Count > 0)
         {

@@ -11,7 +11,7 @@ public class CustomRigidbody2D
 
     
     private Vector2 acceleration;
-    private Vector2 gravity = new Vector2(0, -9.81f);
+    private Vector2 gravity = new Vector2(0, -30f);
 
     private GameObject _playerGo;
     private Player _player;
@@ -27,7 +27,7 @@ public class CustomRigidbody2D
         _player = _playerGo.GetComponent<Player>();
         BoxCollider2D BC = _playerGo.GetComponent<BoxCollider2D>();
         BC.size = size;
-        BC.offset = new Vector2(0, (size.y - 1) / 2);
+        BC.offset = new Vector2(0, size.y / 2);
 
     }
 
@@ -38,18 +38,13 @@ public class CustomRigidbody2D
 
     public void UpdatePhysics(float deltaTime)
     {
-        // Apply gravity
-        Vector2 gravityForce = gravity * gravityScale * deltaTime;
-        ApplyForce(gravityForce);
+        // Apply gravity to velocity
+        velocity += (gravity * gravityScale) * deltaTime;
 
-        // Update velocity
-        velocity += acceleration * deltaTime;
-
-        // Update position
+        // Apply velocity to position
         position += velocity * deltaTime;
 
-        // Reset acceleration
-        acceleration = Vector2.zero;
+        // Collision checking (which snaps us back to ground)
         DetectAndResolveCollisions();
     }
 
@@ -57,9 +52,10 @@ public class CustomRigidbody2D
     {
         // Implement basic AABB collision detection and resolution with ground
 
-        // Get the bounds of the player
-        Vector2 min = position - size / 2;
-        Vector2 max = position + size / 2;
+        // min.y is now the feet (position.y)
+        // max.y is the top of the head (position.y + height)
+        Vector2 min = new Vector2(position.x - size.x / 2, position.y);
+        Vector2 max = new Vector2(position.x + size.x / 2, position.y + size.y);
   
         // Check for collisions with ground objects
         Collider2D[] colliders = Physics2D.OverlapBoxAll(position, size, 0.0f);
@@ -73,7 +69,7 @@ public class CustomRigidbody2D
                 // Simple resolution by setting the player on top of the ground
                 if(velocity.y < 0 && max.y > groundBounds.min.y && min.y < groundBounds.max.y)
                 {
-                    position.y = groundBounds.max.y + size.y / 2;
+                    position.y = groundBounds.max.y; // + size.y / 2
                     //Debug.Log(size);
                     velocity.y = 0;
                 }
@@ -90,13 +86,6 @@ public class CustomRigidbody2D
                     }
                     if(min.x < opponentBounds.max.x && _player.rev)
                     {
-                        /*
-                        Debug.Log("set to right");
-                        Debug.Log(min.x);
-                        Debug.Log(max.x);
-                        Debug.Log(opponentBounds.min.x);
-                        Debug.Log(opponentBounds.max.x);
-                        */
                         position.x = opponentBounds.max.x + size.x / 2;
                     }
                     velocity.x = 0;
@@ -109,18 +98,10 @@ public class CustomRigidbody2D
                 {
                     if (max.x > wallBounds.min.x && max.x < wallBounds.max.x)
                     {
-                        //Debug.Log("set to left");
                         position.x = wallBounds.min.x - size.x / 2;
                     }
                     if (min.x > wallBounds.min.x && min.x < wallBounds.max.x)
                     {
-                        /*
-                        Debug.Log("set to right");
-                        Debug.Log(min.x);
-                        Debug.Log(max.x);
-                        Debug.Log(wallBounds.min.x);
-                        Debug.Log(wallBounds.max.x);
-                        */
                         position.x = wallBounds.max.x + size.x / 2;
                     }
                     velocity.x = 0;

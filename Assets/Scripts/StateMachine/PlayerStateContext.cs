@@ -70,6 +70,16 @@ public class PlayerStateContext
     public bool _isHit=false;
     public bool _isBlocking = false;
     public Animator animator;
+
+    public float FacingDirection => _player.rev ? -1f : 1f;
+
+    public bool IsHoldingBack(byte holdByte)
+    {
+        bool holdingLeft = (holdByte & 0b00001000) != 0;
+        bool holdingRight = (holdByte & 0b00000010) != 0;
+
+        return (_player.rev) ? holdingRight : holdingLeft;
+    }
     
     // Ground checking method
     public void UpdateGroundCheck()
@@ -85,11 +95,11 @@ public class PlayerStateContext
         }
     }
 
-    public PlayerStateContext(GameObject playerGO,float moveSpeed,float jumpForce,float lowJumpMultiplier, float fallMultiplier, float angledJump,GameObject hitboxPref,float rb_margins)
+    public PlayerStateContext(GameObject playerGO, MonoBehaviour executor, float moveSpeed,float jumpForce,float lowJumpMultiplier, float fallMultiplier, float angledJump,GameObject hitboxPref,float rb_margins)
     {
+        _coroutineExecutor = executor; 
         playerTransform = playerGO.GetComponent<Transform>();
         _player = playerGO.GetComponent<Player>();
-
 
         _width = playerTransform.localScale.x * _player.width;
         _height = playerTransform.localScale.y * _player.height;
@@ -114,9 +124,9 @@ public class PlayerStateContext
         _buffer = playerGO.GetComponent<InputBuffer>();
 
         _buffer.InitializeBuffer(40, _player);
-        _buffer.StartBuffer();
 
-        _buffer.OnButtonInput += OnButtonInput; 
+        //_buffer.StartBuffer(_coroutineExecutor);
+        //_buffer.OnButtonInput += OnButtonInput; 
 
         _hitbox = hitboxPref.GetComponent<Hitbox>();
         _player.OnHit += OnHit;                     // subscribes to event handler in player
@@ -136,9 +146,25 @@ public class PlayerStateContext
     public float Width => _width;
     public float Height => _height;
 
+    private MonoBehaviour _coroutineExecutor;
+
+    public void ClearBufferState()
+    {
+        _buffer_state = null;
+    }
+    public void StopInputBuffer()
+    {
+        _buffer.StopBuffer();
+    }
+    public void StartInputBuffer()
+    {
+        _buffer.StartBuffer(_coroutineExecutor);
+    }
+
+
     public void OnButtonInput(object source, byte[][] buffer_state)
     {
-        Debug.Log("Button pressed");
+        //Debug.Log("Button pressed");
         isAttacking = true;
         _buffer_state = buffer_state;
     }
@@ -152,8 +178,14 @@ public class PlayerStateContext
 
     public void OnHit(object source, int Hit_Stun, float hitForce)      // is called by player & updates values
     {
+        //Debug.Log("Player is hit");
+        if (_isHit)
+        {
+            return;
+        }
         _hitStun = Hit_Stun;
         _isHit = true;
         _hitForce = hitForce;
     }
+    
 }

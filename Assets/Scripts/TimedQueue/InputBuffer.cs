@@ -17,6 +17,7 @@ public class InputBuffer : MonoBehaviour
     private int bufferRow_prev;
     public int n;
     private Coroutine bufferCoroutine;
+    private MonoBehaviour coroutineExecutor;
     // Start is called before the first frame update
     public void InitializeBuffer(int size, Player player)
     {
@@ -34,20 +35,29 @@ public class InputBuffer : MonoBehaviour
         //timer.Elapsed += (sender, e) => SFT();
         
     }
-    public void StartBuffer()
+    public void StartBuffer(MonoBehaviour executor)
     {
-        bufferCoroutine = StartCoroutine(BufferRoutine());
-        Debug.Log(bufferCoroutine != null);
-        //timer.Start();
-        Debug.Log("Start Buffer");
+        if (executor == null)
+        {
+            Debug.LogError("InputBuffer: Executor is null! Buffer cannot start.");
+            return;
+        }
+    
+        // Ensure we don't start it twice
+        //StopAllCoroutines(); 
+        executor.StartCoroutine(SFT());
+
+        Debug.Log("InputBuffer: Started successfully.");
     }
 
     public void StopBuffer()
     {
-        if (bufferCoroutine != null)
+        if (bufferCoroutine != null && coroutineExecutor != null)
         {
-            StopCoroutine(bufferCoroutine);
+            coroutineExecutor.StopCoroutine(bufferCoroutine);
             bufferCoroutine = null;
+            coroutineExecutor = null;
+            Debug.Log("Input Buffer stopped");
         }
         //timer.Dispose();
     }
@@ -61,17 +71,25 @@ public class InputBuffer : MonoBehaviour
         }
     }
 
-    private void SFT()
+    private IEnumerator SFT() 
     {
-        // Skip input processing when card modifier (R1) is held
-        if (Player.CardModifierHeld) return;
-        
-        //Debug.Log("SFT");
-        
-        inputByte = _player.GetInput();
-        //Debug.Log(inputByte);
-        //Debug.Log("SFT");
-        UpdateBuffer(inputByte);
+        // 2. Added a loop so this runs every frame of the game
+        while (true) 
+        {
+            // 3. Changed 'return' to 'continue' so it just skips this frame 
+            // instead of killing the whole coroutine
+            if (Player.CardModifierHeld) 
+            {
+                yield return null; 
+                continue;
+            }
+    
+            inputByte = _player.GetInput();
+            UpdateBuffer(inputByte);
+    
+            // 4. This tells Unity: "Wait until the next frame, then start the loop again"
+            yield return null; 
+        }
     }
 
     private void UpdateBuffer(byte inputByte)
@@ -137,5 +155,15 @@ public class InputBuffer : MonoBehaviour
         return buffer.GetCurrentFrame();
     }
     
+    public void UpdateRawInput(Vector2 move)
+    {
+        byte b = 0;
 
+        if (move.y > 0.5f)  b |= 0b00000100; 
+        if (move.y < -0.5f) b |= 0b00000001; 
+        if (move.x < -0.5f) b |= 0b00001000; 
+        if (move.x > 0.5f)  b |= 0b00000010; 
+
+        inputByte = b;
+    }
 }

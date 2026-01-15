@@ -42,6 +42,11 @@ public class Player_Attacking : PlayerState
         // Debug.Log("MonoBehaviour Enabled: " + Context._buffer.enabled);
         // Debug.Log(Context == null ? "Context is null" : "Context is not null");
         Attack attack = EvaluateButtons1(Context._buffer_state);
+
+        Context.StopInputBuffer();
+        Context.isAttacking = false;
+        Context.ClearBufferState();
+
         startup = attack._startup;
         duration = attack._duration;
         recovery = attack._recovery;
@@ -52,23 +57,18 @@ public class Player_Attacking : PlayerState
         blockstun = attack._blockstun;
         hitForce = attack._hitForce;
         blockForce = attack._blockForce;
-        if (Context._player.rev)
-        {
-            position.x *= -1;
-        }
-        if (Context._movementState == "Crouching")
-        {
-            Context.animator.SetInteger("State", 6);
-        }
-        else
-        {
-            Context.animator.SetInteger("State", 5);
-        }
+
+        position = Context._player.rev ? new Vector2(attack._position.x * -1, attack._position.y) : attack._position; 
+        size = attack._size;
+
+        Context.animator.SetInteger("State", (int)StateKey);
         Context.animator.SetInteger("Form", attack._animationForm);
     }
     public override void ExitState()
     {
-        nextStateKey = PlayerStateMachine.EPlayerState.Attacking;
+        Context.StartInputBuffer();
+        Debug.Log("Exiting Attack State. Restarting Buffer.");
+        //nextStateKey = PlayerStateMachine.EPlayerState.Attacking;
     }
     public override void UpdateState()
     {
@@ -125,10 +125,10 @@ public class Player_Attacking : PlayerState
         int tail = bufferarray.GetLength(0) - 1;
         //Debug.Log(bufferarray[tail][0]);
 
-        if ((bufferarray[tail][0] & 0b10000000) != 0) { Debug.Log("Light"); }
-        else if ((bufferarray[tail][0] & 0b01000000) != 0) { Debug.Log("Mid"); }
-        else if ((bufferarray[tail][0] & 0b00100000) != 0) { Debug.Log("Heavy"); }
-        else if ((bufferarray[tail][0] & 0b00010000) != 0) { Debug.Log("Special"); }
+        //if ((bufferarray[tail][0] & 0b10000000) != 0) { Debug.Log("Light"); }
+        //else if ((bufferarray[tail][0] & 0b01000000) != 0) { Debug.Log("Mid"); }
+        //else if ((bufferarray[tail][0] & 0b00100000) != 0) { Debug.Log("Heavy"); }
+        //else if ((bufferarray[tail][0] & 0b00010000) != 0) { Debug.Log("Special"); }
 
         if ((bufferarray[tail][0] & 0b10000000)!=0)
         {

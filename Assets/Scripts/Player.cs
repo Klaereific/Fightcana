@@ -116,7 +116,7 @@ public class Player : MonoBehaviour
         Player user = this;
         Player target = cardToUse.Target == CardTarget.Support ? this : opponent;
 
-        Debug.Log($"UseCard idx={cardIndex}, handCount={cardManager.hand.Count}, card={cardToUse.name}, effect={(cardToUse.effect != null ? cardToUse.effect.name : "null")}, targetClass={cardToUse.Target}, target={(target != null ? target.name : "null")} ");
+        //Debug.Log($"UseCard idx={cardIndex}, handCount={cardManager.hand.Count}, card={cardToUse.name}, effect={(cardToUse.effect != null ? cardToUse.effect.name : "null")}, targetClass={cardToUse.Target}, target={(target != null ? target.name : "null")} ");
 
         if (cardToUse.effect != null)
             cardToUse.effect.Execute(user, target);

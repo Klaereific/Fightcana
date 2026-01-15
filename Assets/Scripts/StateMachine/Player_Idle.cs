@@ -10,7 +10,7 @@ public class Player_Idle : PlayerState
     }
 
     public override void EnterState() {
-        Debug.Log("Enter Idle state");
+        //Debug.Log("Enter Idle state");
         Context.customRb.velocity.x = 0f;
         Context._movementState = "Idle";
         Context._player.isBlocking = false;
@@ -19,6 +19,10 @@ public class Player_Idle : PlayerState
         Context.animator.SetInteger("Form", 0);
     }
     public override void ExitState() {
+        if (Context._isHit)
+        {
+            Context._isHit = false;    
+        }
         nextStateKey = PlayerStateMachine.EPlayerState.Idle;
     }
     public override void UpdateState() {
@@ -43,37 +47,56 @@ public class Player_Idle : PlayerState
             nextStateKey = PlayerStateMachine.EPlayerState.Walk;
         }
         */
-        float inHorz = Input.GetAxis(Context._player._MH_in);
-        float inVert = Input.GetAxis(Context._player._MV_in);
-        if (Context.isAttacking)
-        {
+        //float inHorz = Input.GetAxis(Context._player._MH_in);
+        //float inVert = Input.GetAxis(Context._player._MV_in);
+        //if (Context.isAttacking)
+        //{
+        //    Context.isAttacking = false;
+        //    nextStateKey = PlayerStateMachine.EPlayerState.Attacking;
+        //    
+        //}
+        //if (inVert > 0.5f)
+        //{
+        //    nextStateKey = PlayerStateMachine.EPlayerState.Jump;
+        //}
+        //else if (inVert < -0.5f)
+        //{
+        //    nextStateKey = PlayerStateMachine.EPlayerState.Duck;
+        //}
+        //else if (inHorz != 0)
+        //{
+//
+        //    nextStateKey = PlayerStateMachine.EPlayerState.Walk;
+        //}
+//
+        //if (Context._isHit)
+        //{
+        //    nextStateKey = PlayerStateMachine.EPlayerState.Hit;
+        //    //Context._isHit = false;
+        //}
+
+        byte input = Context._buffer.GetCurrentFrame()[0]; 
+
+        bool isUp    = (input & 0b00000100) != 0; // Bit 2
+        bool isDown  = (input & 0b00000001) != 0; // Bit 0
+        bool isRight = (input & 0b00000010) != 0; // Bit 1
+        bool isLeft  = (input & 0b00001000) != 0; // Bit 3
+
+        if (Context.isAttacking) {
             Context.isAttacking = false;
             nextStateKey = PlayerStateMachine.EPlayerState.Attacking;
-            
         }
-        if (inVert > 0.5f)
-        {
+        else if (isUp) {
             nextStateKey = PlayerStateMachine.EPlayerState.Jump;
         }
-        else if (inVert < -0.5f)
-        {
+        else if (isDown) {
             nextStateKey = PlayerStateMachine.EPlayerState.Duck;
         }
-        else if (inHorz != 0)
-        {
-
+        else if (isLeft || isRight) {
             nextStateKey = PlayerStateMachine.EPlayerState.Walk;
         }
-
-        if (Context._isHit)
-        {
-            nextStateKey = PlayerStateMachine.EPlayerState.Hit;
-            Context._isHit = false;
-        }
-
-
-
     }
+    
     public override PlayerStateMachine.EPlayerState GetNextState()
     {
         return nextStateKey;

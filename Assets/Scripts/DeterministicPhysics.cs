@@ -11,9 +11,9 @@ public class DeterministicPhysics : MonoBehaviour
 
     public void Move(Vector2 velocity)
     {
-        rb.MovePosition(rb.position + velocity * Time.fixedDeltaTime);
+        rb.MovePosition(rb.position + velocity/*5 * Time.deltaTime*/);
     }
-
+    
     public void ApplyVelocity(Vector2 velocity)
     {
         rb.velocity = velocity;

@@ -40,60 +40,107 @@ public class InputBuffer : MonoBehaviour
         //timer.Elapsed += (sender, e) => SFT();
         
     }
-    public void StartBuffer(MonoBehaviour executor)
+    //public void StartBuffer(MonoBehaviour executor)
+    //{
+    //    if (executor == null)
+    //    {
+    //        Debug.LogError("InputBuffer: Executor is null! Buffer cannot start.");
+    //        return;
+    //    }
+    //
+    //    // Ensure we don't start it twice
+    //    //StopAllCoroutines(); 
+    //    executor.StartCoroutine(SFT());
+//
+    //    Debug.Log("InputBuffer: Started successfully.");
+    //}
+//
+    //public void StopBuffer()
+    //{
+    //    if (bufferCoroutine != null && coroutineExecutor != null)
+    //    {
+    //        coroutineExecutor.StopCoroutine(bufferCoroutine);
+    //        bufferCoroutine = null;
+    //        coroutineExecutor = null;
+    //        Debug.Log("Input Buffer stopped");
+    //    }
+    //    //timer.Dispose();
+    //}
+//
+    //private IEnumerator BufferRoutine()
+    //{
+    //    while (true)
+    //    {
+    //        SFT();
+    //        yield return new WaitForSeconds(0.0167f); // 17ms interval
+    //    }
+    //}
+//
+    //private IEnumerator SFT() 
+    //{
+    //    // 2. Added a loop so this runs every frame of the game
+    //    while (true) 
+    //    {
+    //        // 3. Changed 'return' to 'continue' so it just skips this frame 
+    //        // instead of killing the whole coroutine
+    //        if (Player.CardModifierHeld) 
+    //        {
+    //            yield return null; 
+    //            continue;
+    //        }
+    //
+    //        inputByte = _player.GetInput();
+    //        UpdateBuffer(inputByte);
+    //
+    //        // 4. This tells Unity: "Wait until the next frame, then start the loop again"
+    //        yield return null; 
+    //    }
+    //}
+
+    // Add this inside InputBuffer.cs
+
+    public void Tick()
     {
-        if (executor == null)
-        {
-            Debug.LogError("InputBuffer: Executor is null! Buffer cannot start.");
-            return;
-        }
+        // This is the logic previously handled by SFT()
+        // It processes the current raw inputByte into the Press/Hold/Release format
+        // and pushes it into the CircularBuffer.
+        
+        byte press = 0;
+        byte hold = 0;
+        byte rel = 0;
     
-        // Ensure we don't start it twice
-        //StopAllCoroutines(); 
-        executor.StartCoroutine(SFT());
-
-        Debug.Log("InputBuffer: Started successfully.");
-    }
-
-    public void StopBuffer()
-    {
-        if (bufferCoroutine != null && coroutineExecutor != null)
+        byte[] prevFrame = buffer.GetCurrentFrame(); 
+        byte press_prev = prevFrame[0];
+        byte hold_prev = prevFrame[1];
+    
+        for (int i = 0; i < 8; i++)
         {
-            coroutineExecutor.StopCoroutine(bufferCoroutine);
-            bufferCoroutine = null;
-            coroutineExecutor = null;
-            Debug.Log("Input Buffer stopped");
-        }
-        //timer.Dispose();
-    }
-
-    private IEnumerator BufferRoutine()
-    {
-        while (true)
-        {
-            SFT();
-            yield return new WaitForSeconds(0.0167f); // 17ms interval
-        }
-    }
-
-    private IEnumerator SFT() 
-    {
-        // 2. Added a loop so this runs every frame of the game
-        while (true) 
-        {
-            // 3. Changed 'return' to 'continue' so it just skips this frame 
-            // instead of killing the whole coroutine
-            if (Player.CardModifierHeld) 
+            bool pp_bit = ((press_prev >> i) & 1) == 1;
+            bool hp_bit = ((hold_prev >> i) & 1) == 1;
+            bool in_bit = ((inputByte >> i) & 1) == 1;
+    
+            if (in_bit)
             {
-                yield return null; 
-                continue;
+                if (hp_bit || pp_bit) hold = (byte)(hold | (1 << i));
+                else press = (byte)(press | (1 << i));
             }
+            else
+            {
+                if (hp_bit || pp_bit) rel = (byte)(rel | (1 << i));
+            }
+        }
     
-            inputByte = _player.GetInput();
-            UpdateBuffer(inputByte);
+        byte[] input = new byte[3];
+        input[0] = press;
+        input[1] = hold;
+        input[2] = rel;
     
-            // 4. This tells Unity: "Wait until the next frame, then start the loop again"
-            yield return null; 
+        buffer.Enqueue(input);
+    
+        // Trigger the attack event if a button (bits 4-7) was pressed
+        if (press > 15)
+        {
+            OnButtonInput?.Invoke(this, buffer.ReturnBufferArray());
         }
     }
 
@@ -174,13 +221,12 @@ public class InputBuffer : MonoBehaviour
         if (move.x < -0.5f) b |= 0b00001000; 
         if (move.x > 0.5f)  b |= 0b00000010; 
 
-        long currentTick = _inputTimer.ElapsedMilliseconds;
-        long delta = currentTick - _lastProcessTick;
-
-        if (b != 0) // Only log when you are actually pressing a direction
-        {
-            UnityEngine.Debug.Log($"Input Received. Time since last process: {delta}ms | Raw: {move}");
-        }
+        //long currentTick = _inputTimer.ElapsedMilliseconds;
+        //long delta = currentTick - _lastProcessTick;
+        //if (b != 0) // Only log when you are actually pressing a direction
+        //{
+        //    UnityEngine.Debug.Log($"Input Received. Time since last process: {delta}ms | Raw: {move}");
+        //}
 
         inputByte = b;
     }

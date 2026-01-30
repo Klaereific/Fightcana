@@ -65,68 +65,48 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
 
     public InputBuffer _inputBuffer;
 
+    [Header("Local Multiplayer Settings")]
     public Transform opponentTransform;
+    public int playerIndex = 0;
 
-    private void UpdateFacingDirection()
-{
-    if (opponentTransform != null)
+    void UpdateFacingDirection()
     {
-        bool shouldBeFlipped = transform.position.x > opponentTransform.position.x;
-        
-        if (_context._player.rev != shouldBeFlipped)
-        {
-            _context._player.rev = shouldBeFlipped;
-
-            // CORRECT: We keep Y and Z at 1, only flipping X
-            // This is like looking at the sprite in a mirror rather than turning it
-            float xMag = 2.0f;
-            transform.localScale = new Vector3(shouldBeFlipped ? -xMag : xMag, 0.500007f, 0.9999714f);
-
-            // FORCE ROTATION TO ZERO: This prevents the "Sheet of Paper" rotation
-            transform.rotation = Quaternion.identity;
+        // If your logic says "If moving left, flip" but doesn't allow 
+        // velocity to be applied while flipped, you'll get stuck.
+        if (_rawMoveInput.x > 0 && flipped) {
+            flipped = false;
+            // transform.Rotate(0, 180, 0); // Example flip
+        } else if (_rawMoveInput.x < 0 && !flipped) {
+            flipped = true;
         }
     }
-}
-
-    // Start is called before the first frame update
-    //protected void Awake()
-    //{
-    //    
-    //    playerGO = transform.parent.gameObject; 
-    //    player = playerGO.GetComponent<Player>();
-    //
-    //    string[] controllers = Input.GetJoystickNames();
-    //    for(int i=0;i<controllers.Length; i++){
-    //        Debug.Log(i+": "+controllers[i]);
-    //    }
-    //    
-    //    /*{
-    //    inputBufferP1 = playerGO.GetComponent<InputBuffer>();
-    //
-    //    inputBufferP1.InitializeBuffer(40, player);
-    //    
-    //    inputBufferP1.StartBuffer();
-    //    }*/
-    //
-    //    width = playerGO.transform.localScale.x;
-    //    height = playerGO.transform.localScale.y;
-    //    flipped = false;
-    //    _context = new PlayerStateContext(playerGO, moveSpeed, jumpForce, lowJumpMultiplier,fallMultiplier,angledJump,hitboxPrefab, rb_margin);
-    //    _context.groundCheck = transform.Find("GroundCheck");
-    //    
-    //    //_controls = new PlayerControls();
-    //
-    //    //InititalizeControls();
-    //    //_controls.Enable();
-    //
-    //    InitializeStates();
-    //    currentState.EnterState();
-    //
-    //}
 
     protected void Awake()
     {
         _controls = new PlayerControls();
+
+        // 2. BIND TO SPECIFIC DEVICE
+        // This ensures P1 only listens to the first controller and P2 to the second.
+        if (playerIndex < Gamepad.all.Count)
+        {
+            // Bind to the specific gamepad
+            _controls.devices = new[] { Gamepad.all[playerIndex] };
+            Debug.Log($"Player {playerIndex} bound to {Gamepad.all[playerIndex].name}");
+        }
+        else if (playerIndex == 0 && Keyboard.current != null)
+        {
+            // Only P1 gets keyboard fallback
+            _controls.devices = new[] { Keyboard.current };
+            Debug.Log("Player 0 bound to Keyboard");
+        }
+        else
+        {
+            // IMPORTANT: Bind to an empty array so they DON'T listen to P1's controller
+            _controls.devices = new InputDevice[0]; 
+            Debug.Log($"Player {playerIndex} has no device and is disabled.");
+        }
+
+        _controls.Enable();
 
         _controls.Gameplay.Move.performed += ctx => _rawMoveInput = ctx.ReadValue<Vector2>();
         _controls.Gameplay.Move.canceled += ctx => _rawMoveInput = Vector2.zero;
@@ -134,7 +114,7 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
         _context = new PlayerStateContext(playerGO, this, moveSpeed, jumpForce, lowJumpMultiplier, fallMultiplier, angledJump, hitboxPrefab, rb_margin);
         _context.animator = animator;
         
-        _context.StartInputBuffer();
+        //_context.StartInputBuffer();
 
         InitializeStates();
 
@@ -181,12 +161,19 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
     //}
 
     private void Update()
+{
+    // Log the raw input to see if the D-pad is actually sending numbers
+    if (_rawMoveInput != Vector2.zero) 
     {
-        if (_context._buffer != null)
-        {
-            _context._buffer.UpdateRawInput(_rawMoveInput);
-        }
+        Debug.Log($"Movement Input Detected: {_rawMoveInput}");
     }
+
+    if (_context._buffer != null)
+    {
+        _context._buffer.UpdateRawInput(_rawMoveInput);
+        _context._buffer_state = _context._buffer.GetBufferArray();
+    }
+}
 
     private void OnEnable() => _controls.Enable();
     private void OnDisable() => _controls.Disable();
@@ -261,21 +248,29 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
 
     public override void FixedUpdate()
     {
+        // 1. Advance the input buffer by one frame
+        if (_context._buffer != null)
+        {
+            _context._buffer.Tick();
+        }
+
+        // 2. Update visuals and state logic
         UpdateFacingDirection();
 
+        // base.FixedUpdate() runs currentState.UpdateState() 
+        // This is where Player_Walk and Player_Idle now read the buffer!
         base.FixedUpdate();
 
+        // 3. Physics Simulation
         float TICK_RATE = 1f / 60f; 
         _context.customRb.UpdatePhysics(TICK_RATE);
-        // TEMPORARY TEST: Manually move the parent based on the context velocity
-        if (_context.customRb.position.y < -0.5f)
+
+        if (_context.customRb.position.y < -0.5f) 
         {
-            //_context.customRb.UpdatePhysics(Time.fixedDeltaTime);
-            //Vector3 movement = new Vector3(_context.customRb.velocity.x, _context.customRb.velocity.y, 0);
-            //playerGO.transform.position += movement * Time.fixedDeltaTime;
             _context.customRb.position.y = -0.5f;
-            _context.customRb.velocity.y = 0;
+            _context.customRb.velocity.y = -0.5f; 
         }
+        // 4. Sync Visuals
         playerGO.transform.position = new Vector3(_context.customRb.position.x, _context.customRb.position.y, 0);
     }
 }

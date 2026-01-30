@@ -27,55 +27,11 @@ public class Player_Idle : PlayerState
     }
     public override void UpdateState() {
 
-        /* // Byte implementation (inefficient)
-        
-        byte input_byte = Context._buffer.GetCurrentFrame()[0];
-        if ((int)input_byte > 15)  // "Attack" button pressed
-        {
-            nextStateKey = PlayerStateMachine.EPlayerState.Attacking;
-        }
-        if ((input_byte & 0b00000100) != 0)
-        {
-            nextStateKey = PlayerStateMachine.EPlayerState.Jump;
-        }
-        if ((input_byte & 0b00000001) != 0)
-        {
-            nextStateKey = PlayerStateMachine.EPlayerState.Duck;
-        }
-        if (((input_byte & 0b00000010) !=0)|((input_byte & 0b00001000)!=0)){
-            
-            nextStateKey = PlayerStateMachine.EPlayerState.Walk;
-        }
-        */
-        //float inHorz = Input.GetAxis(Context._player._MH_in);
-        //float inVert = Input.GetAxis(Context._player._MV_in);
-        //if (Context.isAttacking)
-        //{
-        //    Context.isAttacking = false;
-        //    nextStateKey = PlayerStateMachine.EPlayerState.Attacking;
-        //    
-        //}
-        //if (inVert > 0.5f)
-        //{
-        //    nextStateKey = PlayerStateMachine.EPlayerState.Jump;
-        //}
-        //else if (inVert < -0.5f)
-        //{
-        //    nextStateKey = PlayerStateMachine.EPlayerState.Duck;
-        //}
-        //else if (inHorz != 0)
-        //{
-//
-        //    nextStateKey = PlayerStateMachine.EPlayerState.Walk;
-        //}
-//
-        //if (Context._isHit)
-        //{
-        //    nextStateKey = PlayerStateMachine.EPlayerState.Hit;
-        //    //Context._isHit = false;
-        //}
+        byte[] currentFrame = Context._buffer.GetCurrentFrame();
+        byte press = currentFrame[0];
+        byte hold = currentFrame[1];
 
-        byte input = Context._buffer.GetCurrentFrame()[0]; 
+        byte input = (byte)(press | hold); 
 
         bool isUp    = (input & 0b00000100) != 0; // Bit 2
         bool isDown  = (input & 0b00000001) != 0; // Bit 0
@@ -94,6 +50,10 @@ public class Player_Idle : PlayerState
         }
         else if (isLeft || isRight) {
             nextStateKey = PlayerStateMachine.EPlayerState.Walk;
+        }
+        if (Context._isHit)
+        {
+            nextStateKey = PlayerStateMachine.EPlayerState.Hit;
         }
     }
     

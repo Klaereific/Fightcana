@@ -14,33 +14,44 @@ public class Player_Duck : PlayerState
         Context.animator.SetInteger("State", 3);
         if (!Context._isCrouching)
         {
-            Duck();
+            ApplyDuckTransform();
         }
         
         
     }
     public override void ExitState() {
+        ApplyStandTransform();
         nextStateKey = PlayerStateMachine.EPlayerState.Duck;
     }
     public override void UpdateState() {
-        if (Context.isAttacking)
-        {
-            Context.isAttacking = false;
-            nextStateKey = PlayerStateMachine.EPlayerState.Attacking;
+        // Read Press (0) and Hold (1) from buffer
+        byte[] currentFrame = Context._buffer.GetCurrentFrame();
+        byte press = currentFrame[0];
+        byte hold = currentFrame[1];
+        byte input = (byte)(press | hold);
 
-        }
-        if (Input.GetAxis(Context._player._MV_in) > -0.5f)
+        bool isDownHeld = (input & 0b00000001) != 0; // Bit 0
+
+        // 1. Check if we should stand up
+        if (!isDownHeld)
         {
             nextStateKey = PlayerStateMachine.EPlayerState.Idle;
-            Stand();
+            return;
         }
-        else if (Input.GetAxis(Context._player._MH_in) < 0.3f)
+
+        // 2. Handle Blocking while crouching
+        // If holding away from opponent (Bit 1 is Right, Bit 3 is Left)
+        bool isRight = (input & 0b00000010) != 0;
+        bool isLeft  = (input & 0b00001000) != 0;
+        
+        // Simple logic: if any horizontal input is held while ducking, enable block
+        Context._player.isBlocking = (isLeft || isRight);
+
+        // 3. Attack check
+        if (input > 15)
         {
-            Context._player.isBlocking = true;
-        }
-        else
-        {
-            Context._player.isBlocking = true;
+            Context.isAttacking = true;
+            nextStateKey = PlayerStateMachine.EPlayerState.Attacking;
         }
     }
     public override PlayerStateMachine.EPlayerState GetNextState()
@@ -50,20 +61,19 @@ public class Player_Duck : PlayerState
     public override void OnTriggerEnter(Collider other) {}
     public override void OnTriggerStay(Collider other) {}
     public override void OnTriggerExit(Collider other) {}
-    public void Duck()
+    private void ApplyDuckTransform()
     {
-        float duckedheight = Context._height / 2;
-        Context.customRb.position = new Vector2(Context.playerTransform.position.x, Context.playerTransform.position.y - duckedheight / 2);
-        Context.customRb.SetScale(Context._width, duckedheight);
+        // Instead of moving the Y position (which causes sinking), 
+        // we only adjust the scale of the collision box.
+        float duckedHeight = Context._height / 2;
+        Context.customRb.SetScale(Context._width, duckedHeight);
         Context._isCrouching = true;
-        //Context.playerTransform.localScale = new Vector2(Context._width, duckedheight);
+    }
 
-    }
-    public void Stand()
+    private void ApplyStandTransform()
     {
-        Context.customRb.position = Context.playerTransform.position;
         Context.customRb.SetScale(Context._width, Context._height);
-        //Context.playerTransform.localScale = new Vector2(Context._width, Context._height);
-        
+        Context._isCrouching = false;
     }
+
 }

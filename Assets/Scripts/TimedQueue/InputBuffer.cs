@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static GameHandler;
+using System.Diagnostics;
+using Debug = UnityEngine.Debug;
 
 public class InputBuffer : MonoBehaviour
 {
@@ -19,6 +21,9 @@ public class InputBuffer : MonoBehaviour
     private Coroutine bufferCoroutine;
     private MonoBehaviour coroutineExecutor;
     // Start is called before the first frame update
+
+    private float _lastInputTime;
+
     public void InitializeBuffer(int size, Player player)
     {
         _player = player;
@@ -155,8 +160,13 @@ public class InputBuffer : MonoBehaviour
         return buffer.GetCurrentFrame();
     }
     
+
+    private Stopwatch _inputTimer = new Stopwatch();
+    private long _lastProcessTick = 0;
     public void UpdateRawInput(Vector2 move)
     {
+        float captureTime = Time.realtimeSinceStartup;
+
         byte b = 0;
 
         if (move.y > 0.5f)  b |= 0b00000100; 
@@ -164,6 +174,17 @@ public class InputBuffer : MonoBehaviour
         if (move.x < -0.5f) b |= 0b00001000; 
         if (move.x > 0.5f)  b |= 0b00000010; 
 
+        long currentTick = _inputTimer.ElapsedMilliseconds;
+        long delta = currentTick - _lastProcessTick;
+
+        if (b != 0) // Only log when you are actually pressing a direction
+        {
+            UnityEngine.Debug.Log($"Input Received. Time since last process: {delta}ms | Raw: {move}");
+        }
+
         inputByte = b;
     }
+
+    
+   
 }

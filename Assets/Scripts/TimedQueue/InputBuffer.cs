@@ -104,21 +104,21 @@ public class InputBuffer : MonoBehaviour
         // This is the logic previously handled by SFT()
         // It processes the current raw inputByte into the Press/Hold/Release format
         // and pushes it into the CircularBuffer.
-        
+
         byte press = 0;
         byte hold = 0;
         byte rel = 0;
-    
+
         byte[] prevFrame = buffer.GetCurrentFrame(); 
         byte press_prev = prevFrame[0];
         byte hold_prev = prevFrame[1];
-    
+
         for (int i = 0; i < 8; i++)
         {
             bool pp_bit = ((press_prev >> i) & 1) == 1;
             bool hp_bit = ((hold_prev >> i) & 1) == 1;
             bool in_bit = ((inputByte >> i) & 1) == 1;
-    
+
             if (in_bit)
             {
                 if (hp_bit || pp_bit) hold = (byte)(hold | (1 << i));
@@ -129,14 +129,14 @@ public class InputBuffer : MonoBehaviour
                 if (hp_bit || pp_bit) rel = (byte)(rel | (1 << i));
             }
         }
-    
+
         byte[] input = new byte[3];
         input[0] = press;
         input[1] = hold;
         input[2] = rel;
-    
+
         buffer.Enqueue(input);
-    
+
         // Trigger the attack event if a button (bits 4-7) was pressed
         if (press > 15)
         {
@@ -216,10 +216,10 @@ public class InputBuffer : MonoBehaviour
 
         byte b = 0;
 
-        if (move.y > 0.5f)  b |= 0b00000100; 
-        if (move.y < -0.5f) b |= 0b00000001; 
-        if (move.x < -0.5f) b |= 0b00001000; 
-        if (move.x > 0.5f)  b |= 0b00000010; 
+        if (move.y > 0.3f)  b |= 0b00000100; 
+        if (move.y < -0.3f) b |= 0b00000001; 
+        if (move.x < -0.3f) b |= 0b00001000; 
+        if (move.x > 0.3f)  b |= 0b00000010; 
 
         //long currentTick = _inputTimer.ElapsedMilliseconds;
         //long delta = currentTick - _lastProcessTick;
@@ -229,8 +229,8 @@ public class InputBuffer : MonoBehaviour
         //}
 
         inputByte = b;
-    }
-
-    
-   
+    }   
 }
+
+
+

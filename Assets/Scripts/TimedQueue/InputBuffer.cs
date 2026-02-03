@@ -215,11 +215,12 @@ public class InputBuffer : MonoBehaviour
         float captureTime = Time.realtimeSinceStartup;
 
         byte b = 0;
+        float threshold = 0.35f;
 
-        if (move.y > 0.3f)  b |= 0b00000100; 
-        if (move.y < -0.3f) b |= 0b00000001; 
-        if (move.x < -0.3f) b |= 0b00001000; 
-        if (move.x > 0.3f)  b |= 0b00000010; 
+        if (move.y > threshold)  b |= 0b00000100; 
+        if (move.y < -threshold) b |= 0b00000001; 
+        if (move.x < -threshold) b |= 0b00001000; 
+        if (move.x > threshold)  b |= 0b00000010; 
 
         //long currentTick = _inputTimer.ElapsedMilliseconds;
         //long delta = currentTick - _lastProcessTick;

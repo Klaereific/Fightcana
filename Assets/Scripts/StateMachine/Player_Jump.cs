@@ -10,48 +10,53 @@ public class Player_Jump : PlayerState
         //PlayerStateContext Context = context;
     }
 
+
+    // CURRENT WORKING IMPLEMENTATION OF ENTER STATE BELOW
+
+
     //public override void EnterState()
     //{
-    //    //Debug.Log("Enter Jump state");
-    //    float moveInput = Input.GetAxis(Context._player._MH_in);
-    //    startHeight = Context.customRb.position.y;
-    //    isFalling = false;
     //    Context._movementState = "Jumping";
     //    Context.animator.SetInteger("State", 2);
-    //    if (Context.customRb.velocity.x > 0.1)
-    //    {
-    //        Context.animator.SetInteger("Form", 2);
-    //    }
-    //    else if (Context.customRb.velocity.x < -0.1)
-    //    {
-    //        Context.animator.SetInteger("Form", 3);
-    //    }
+//
+    //    startHeight = Context.customRb.position.y;
+//
+    //    Context.customRb.velocity.y = Context._jumpForce;
+//
+    //    // Handle horizontal animation variants
+    //    if (Mathf.Abs(Context.customRb.velocity.x) > 0.1f)
+    //        Context.animator.SetInteger("Form", Context.customRb.velocity.x > 0 ? 2 : 3);
     //    else
-    //    {
     //        Context.animator.SetInteger("Form", 1);
-    //    }
-//
-//
-//
-    //    Jump(moveInput, Context);
-    //    //Context.jumpRequest = false;
-    //    
     //}
+
     public override void EnterState()
     {
         Context._movementState = "Jumping";
         Context.animator.SetInteger("State", 2);
-
-        // 1. Record the start height (now -0.5f)
+    
         startHeight = Context.customRb.position.y;
-
-        // 2. Set the initial upward burst. 
-        // Do NOT add to velocity; set it directly to ensure consistency.
+    
+        // 1. ACTIVE INPUT CHECK: Look at the buffer to "lock in" the jump direction
+        byte[] currentFrame = Context._buffer.GetCurrentFrame();
+        byte input = (byte)(currentFrame[0] | currentFrame[1]); // Combine Press and Hold
+    
+        bool isRight = (input & 0b00000010) != 0;
+        bool isLeft  = (input & 0b00001000) != 0;
+    
+        float jumpDirection = 0;
+        if (isRight) jumpDirection = 1;
+        else if (isLeft) jumpDirection = -1;
+    
+        // 2. SET VELOCITY: Apply vertical force AND the angled jump force
         Context.customRb.velocity.y = Context._jumpForce;
-
-        // Handle horizontal animation variants
-        if (Mathf.Abs(Context.customRb.velocity.x) > 0.1f)
-            Context.animator.SetInteger("Form", Context.customRb.velocity.x > 0 ? 2 : 3);
+        
+        // We set velocity.x here and never change it in UpdateState to make it "committed"
+        Context.customRb.velocity.x = jumpDirection * Context._angledJump;
+    
+        // 3. ANIMATION: Use the jumpDirection we just calculated
+        if (jumpDirection != 0)
+            Context.animator.SetInteger("Form", jumpDirection > 0 ? 2 : 3);
         else
             Context.animator.SetInteger("Form", 1);
     }

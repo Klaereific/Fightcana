@@ -53,7 +53,7 @@ public class AnimationDurationController : MonoBehaviour
 
                 // Set the Animator's speed
                 animator.SetFloat("SpeedMultiplier", newSpeed);
-                Debug.Log($"Set {stateName} to play in {newDuration}s with speed {newSpeed}");
+                //Debug.Log($"Set {stateName} to play in {newDuration}s with speed {newSpeed}");
                 return;
             }
         }

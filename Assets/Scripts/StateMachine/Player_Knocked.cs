@@ -11,7 +11,7 @@ public class Player_Knocked : PlayerState
 
     public override void EnterState()
     {
-        Debug.Log("Enter hit state");
+        //Debug.Log("Enter hit state");
         _knockStun = Context._knockStun;
     }
     public override void ExitState() {

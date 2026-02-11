@@ -13,18 +13,33 @@ public class Player_Hit : PlayerState
 
     public override void EnterState()
     {
-        Debug.Log("Enter hit state");
         _hitStun = Context._hitStun;
         _hitForce = Context._hitForce;
-        Context.animator.SetInteger("State", 4);
-        Context.animator.SetInteger("Form", 2);
+
+        // Debug.Log($"PLAYER_HIT: Entered hit state with {_hitStun} frames of hitstun.");
+
+		Context.animator.SetInteger("State", 4);
+		// Choose hit animation form by posture:
+		// 0 = standing hit, 1 = crouch hit, 2 = air hit
+		bool isCrouching = Context._movementState == "Crouching" || Input.GetAxis(Context._player._MV_in) < -0.5f;
+		bool isAirborne = !Context.isGrounded;
+		
+		//Debug.Log($"PLAYER_HIT: isCrouching={isCrouching}, isAirborne={isAirborne}, movementState={Context._movementState}, isGrounded={Context.isGrounded}");
+		
+		// For now, always use standing hit to test if animations work
+		Context.animator.SetInteger("Form", 0);
+		//Debug.Log("PLAYER_HIT: Set Form to 0 (standing hit) - SIMPLIFIED FOR TESTING");
+		
+		//Debug.Log($"PLAYER_HIT: Animator State={Context.animator.GetInteger("State")}, Form={Context.animator.GetInteger("Form")}");
+		//Debug.Log($"Animator enabled: {Context.animator.enabled}");
+		//Debug.Log($"Animator Controller: {Context.animator.runtimeAnimatorController}");
 
         pushback = new Vector2(_hitForce * (Context._player.rev ? -1 : 1), 0);
 
         
     }
     public override void ExitState() {
-        nextStateKey = PlayerStateMachine.EPlayerState.Hit;
+        //nextStateKey = PlayerStateMachine.EPlayerState.Hit;
     }
     public override void UpdateState() {
         _hitStun--;
@@ -34,7 +49,11 @@ public class Player_Hit : PlayerState
         {
             pushback = new Vector2(0, 0);
         }
+        
+        //Debug.Log($"PLAYER_HIT: UpdateState - hitStun remaining: {_hitStun}");
+        
         if(_hitStun < 1){
+            //Debug.Log("PLAYER_HIT: Hit stun finished, transitioning to next state");
             if(Context.isAttacking){
                 nextStateKey = PlayerStateMachine.EPlayerState.Attacking;
             }

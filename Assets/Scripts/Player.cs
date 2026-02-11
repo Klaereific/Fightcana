@@ -25,8 +25,11 @@ public class Player : MonoBehaviour
     public string _MV_in = "MoveVertical1";
     public string _MH_in = "MoveHorizontal";
 
+    public CardManager cardManager; // Assign this in the Inspector or via script
+    public Player opponent;
+    public static bool CardModifierHeld;
 
-
+    public bool enableCardInput = true;
 
     private void Awake()
     {
@@ -38,12 +41,13 @@ public class Player : MonoBehaviour
     {
         health -= damage;
         health = Mathf.Clamp(health, 0, 100);
-        Debug.Log("Player Health: " + health);
+        // Debug.Log($"TAKEDAMAGE: Firing OnHit event with hitstun: {hitstun}");
         OnHit?.Invoke(this, hitstun, hitForce);                 // invokes method to transfer values to context
+        if (cardManager != null) cardManager.AddMeterOnHitTaken();
         if (health <= 0)
         {
             // Handle player death
-            Debug.Log("Player is dead!");
+            // Debug.Log("Player is dead!");
         }
         
     }
@@ -69,4 +73,54 @@ public class Player : MonoBehaviour
         
     }
     
+    private int frameCounter = 0;
+
+    void Update()
+    {
+        if (!enableCardInput) { return; }
+
+        bool r1 = Input.GetKey(KeyCode.JoystickButton5);
+        CardModifierHeld = r1;
+        if (!r1) { frameCounter = 0; return; }
+
+        frameCounter++;
+        if (Input.GetKeyDown(KeyCode.JoystickButton5)) {
+            // Debug.Log("R1 held");
+        }
+
+        if (cardManager == null) { return; }
+
+        // Neutral R1: draw new hand only if meter is full and current hand is empty
+        if (cardManager.hand.Count == 0 && Input.GetKeyDown(KeyCode.JoystickButton5)) {
+            cardManager.TryDrawNewHand();
+            return;
+        }
+
+        // Map specific joystick buttons to hand indices using GetKeyDown and hand-size guards
+        if (cardManager.hand.Count > 0 && Input.GetKeyDown(KeyCode.JoystickButton0)) { UseCard(0); return; }
+        if (cardManager.hand.Count > 1 && Input.GetKeyDown(KeyCode.JoystickButton1)) { UseCard(1); return; }
+        if (cardManager.hand.Count > 2 && Input.GetKeyDown(KeyCode.JoystickButton2)) { UseCard(2); return; }
+        if (cardManager.hand.Count > 3 && Input.GetKeyDown(KeyCode.JoystickButton3)) { UseCard(3); return; }
+
+        // If your device maps face buttons to different indices, update the four lines above accordingly.
+    }
+
+    void UseCard(int cardIndex)
+    {
+        if (cardManager == null) { Debug.LogWarning("UseCard aborted: cardManager not assigned"); return; }
+        if (cardIndex < 0 || cardIndex >= cardManager.hand.Count) { Debug.LogWarning("UseCard aborted: index out of range"); return; }
+
+        CardData cardToUse = cardManager.hand[cardIndex];
+        if (cardToUse == null) { Debug.LogWarning("UseCard aborted: null card at index"); return; }
+
+        Player user = this;
+        Player target = cardToUse.Target == CardTarget.Support ? this : opponent;
+
+        //Debug.Log($"UseCard idx={cardIndex}, handCount={cardManager.hand.Count}, card={cardToUse.name}, effect={(cardToUse.effect != null ? cardToUse.effect.name : "null")}, targetClass={cardToUse.Target}, target={(target != null ? target.name : "null")} ");
+
+        if (cardToUse.effect != null)
+            cardToUse.effect.Execute(user, target);
+
+        cardManager.ConsumeHandToGraveyard();
+    }
 }

@@ -88,6 +88,9 @@ public class CircularBuffer<T>
     }
     public T GetCurrentFrame()
     {
-        return buffer[tail];
+        if (size == 0) throw new InvalidOperationException("Buffer empty");
+        // The newest item is at head - 1 (with wrap-around)
+        int newestIndex = (head - 1 + capacity) % capacity;
+        return buffer[newestIndex];
     }
 }

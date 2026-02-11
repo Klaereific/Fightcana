@@ -15,39 +15,77 @@ public class Hitbox : MonoBehaviour
     public float hitForce = 0;
     public float blockForce = 0;
     private bool hasHitPlayer = false;
-    public Player sourcePlayer;
+    //public Player sourcePlayer;
 
-
-    private void OnTriggerEnter2D(Collider2D collision)
+    public UnityEngine.Transform sourceTransform;
+    /* private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log("Collision");
-        if (!hasHitPlayer && collision.gameObject.CompareTag("Player"))
+        if (hasHitPlayer) return; // Exit if we've already hit something
+
+        if (collision.gameObject.CompareTag("Player"))
         {
             Player opponent = collision.gameObject.GetComponent<Player>();
 
             if (opponent != null && opponent != sourcePlayer)
             {
+                // Debug.Log($"HITBOX: Collided with {opponent.name}. Sending damage: {damage}, hitstun: {hitstun}");
+                if (opponent.isBlocking)
+                {
+                    // Debug.Log("Hit was BLOCKED by " + opponent.name);
+                    opponent.GoIntoBlock(blockstun, blockForce);
+                }
+                else
+                {
+                    // Debug.Log("Hit LANDED on " + opponent.name);
+                    opponent.TakeDamage(damage, hitstun, hitForce);
+                }
 
-                opponent.TakeDamage(damage, hitstun, hitForce);
-                hasHitPlayer = true;
-            }
-            if (opponent != null && opponent != sourcePlayer && opponent.isBlocking)
-            {
-
-                opponent.GoIntoBlock(blockstun, blockForce);
-                hasHitPlayer = true;
+                if (sourcePlayer != null && sourcePlayer.cardManager != null)
+                {
+                    sourcePlayer.cardManager.AddMeterOnHitDealt();
+                }
+                Destroy(gameObject);
+                //hasHitPlayer = true; 
             }
         }
-    }
+    } */
 
     private void FixedUpdate()
     {
-        if (hitstun != 0 && blockstun != 0 && !hasHitPlayer)
+        Vector2 min = transform.position - transform.localScale / 2;
+        Vector2 max = transform.position + transform.localScale / 2;
+
+        Collider2D[] colliders = Physics2D.OverlapBoxAll(transform.position, transform.localScale, 0.0f);
+
+        foreach (var collider in colliders)
         {
-            DetectAndResolveCollisions();
+            if (collider.CompareTag("Player"))
+            {
+                Player opponent = collider.gameObject.GetComponent<Player>();
+
+                // FIX 1A: Check if opponent exists AND opponent's transform is NOT the source transform
+                if (opponent != null && opponent.transform != sourceTransform) 
+                {
+                    if (hasHitPlayer) continue; 
+
+                    if (opponent.isBlocking)
+                    {
+                        opponent.GoIntoBlock(blockstun, blockForce);
+                    }
+                    else
+                    {
+                        opponent.TakeDamage(damage, hitstun, hitForce);
+                    }
+
+                    hasHitPlayer = true;
+                }
+            }
+            //if (hitstun != 0 && blockstun != 0 && !hasHitPlayer)
+            //{
+            //    DetectAndResolveCollisions();
+            //}
         }
     }
-
     private void DetectAndResolveCollisions()
     {
         // Implement basic AABB collision detection and resolution with ground
@@ -58,7 +96,7 @@ public class Hitbox : MonoBehaviour
 
         // Check for collisions with ground objects
         Collider2D[] colliders = Physics2D.OverlapBoxAll(transform.position, transform.localScale, 0.0f);
-        Debug.Log("Collision");
+        //Debug.Log("Collision");
         foreach (var collider in colliders)
         {
             if (collider.CompareTag("Player"))
@@ -66,7 +104,7 @@ public class Hitbox : MonoBehaviour
                 // Get bounds of the ground object
                 Player opponent = collider.gameObject.GetComponent<Player>();
 
-                if (opponent != null && opponent != sourcePlayer)
+                if (opponent != null && opponent != sourceTransform)
                 {
                     if (opponent.isBlocking)
                     {
@@ -84,11 +122,11 @@ public class Hitbox : MonoBehaviour
     }
     //private void OnDestroy()
 
-    private void OnTriggerExit2D(Collider2D collision)
+    /* private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Player"))
         {
             hasHitPlayer = false;  // Reset the flag when the player leaves the hitbox
         }
-    }
+    } */
 }

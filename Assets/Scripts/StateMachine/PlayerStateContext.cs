@@ -187,5 +187,15 @@ public class PlayerStateContext
         _isHit = true;
         _hitForce = hitForce;
     }
+
+    public int GetRelativeDirection(byte input) 
+    {
+        bool left = (input & 0b00001000) != 0;
+        bool right = (input & 0b00000010) != 0;
+
+        if (left == right) return 5; // Neutral
+        if (_player.rev) return left ? 6 : 4; // Flipped: Left is Forward
+        return right ? 6 : 4; 
+    }
     
 }

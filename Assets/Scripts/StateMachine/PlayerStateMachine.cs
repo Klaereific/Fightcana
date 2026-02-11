@@ -13,7 +13,8 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
         Attacking,
         Blocking,
         Hit,
-        Knocked
+        Knocked,
+        Dashing 
     }
 
     public enum Buttons
@@ -71,8 +72,8 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
 
     void UpdateFacingDirection()
     {
-        // If your logic says "If moving left, flip" but doesn't allow 
-        // velocity to be applied while flipped, you'll get stuck.
+        if(currentState.StateKey == EPlayerState.Dashing) return;
+
         if (_rawMoveInput.x > 0 && flipped) {
             flipped = false;
             // transform.Rotate(0, 180, 0); // Example flip
@@ -165,7 +166,7 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
     // Log the raw input to see if the D-pad is actually sending numbers
     if (_rawMoveInput != Vector2.zero) 
     {
-        Debug.Log($"Movement Input Detected: {_rawMoveInput}");
+        //Debug.Log($"Movement Input Detected: {_rawMoveInput}");
     }
 
     if (_context._buffer != null)
@@ -188,6 +189,7 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
         States.Add(EPlayerState.Blocking, new Player_Blocking(_context, EPlayerState.Blocking));
         States.Add(EPlayerState.Hit, new Player_Hit(_context, EPlayerState.Hit));
         States.Add(EPlayerState.Knocked, new Player_Knocked(_context, EPlayerState.Knocked));
+        States.Add(EPlayerState.Dashing, new Player_Dashing(_context, EPlayerState.Dashing));
         currentState = States[EPlayerState.Idle];
     }
     /*{
@@ -254,8 +256,27 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
             _context._buffer.Tick();
         }
 
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            _context._buffer.DebugHistory(flipped);
+        }
+
+        if (currentState.StateKey == EPlayerState.Idle || currentState.StateKey == EPlayerState.Walk)
+        {
+            if (_context._buffer.CheckDash(flipped))
+            {
+                TransitionToState(EPlayerState.Dashing); 
+                return; 
+            }
+        }
+
         // 2. Update visuals and state logic
-        UpdateFacingDirection();
+        
+        if(currentState.StateKey != EPlayerState.Dashing)
+        {
+            UpdateFacingDirection();    
+        }
+        
 
         // base.FixedUpdate() runs currentState.UpdateState() 
         // This is where Player_Walk and Player_Idle now read the buffer!

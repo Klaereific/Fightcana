@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -14,7 +15,8 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
         Blocking,
         Hit,
         Knocked,
-        Dashing 
+        Dashing,
+        BackDashing
     }
 
     public enum Buttons
@@ -70,15 +72,21 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
     public Transform opponentTransform;
     public int playerIndex = 0;
 
+    public Player opponent; 
+
+    public void Start()
+    {
+        AssignOpponent();
+    }
+
     void UpdateFacingDirection()
     {
         if(currentState.StateKey == EPlayerState.Dashing) return;
 
-        if (_rawMoveInput.x > 0 && flipped) {
-            flipped = false;
-            // transform.Rotate(0, 180, 0); // Example flip
-        } else if (_rawMoveInput.x < 0 && !flipped) {
-            flipped = true;
+        if (transform.position.x < opponentTransform.position.x) {
+        flipped = false; // Opponent is to my right, so I face Right
+        } else {
+            flipped = true;  // Opponent is to my left, so I face Left
         }
     }
 
@@ -190,6 +198,7 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
         States.Add(EPlayerState.Hit, new Player_Hit(_context, EPlayerState.Hit));
         States.Add(EPlayerState.Knocked, new Player_Knocked(_context, EPlayerState.Knocked));
         States.Add(EPlayerState.Dashing, new Player_Dashing(_context, EPlayerState.Dashing));
+        States.Add(EPlayerState.BackDashing, new Player_BackDashing(_context, EPlayerState.BackDashing));
         currentState = States[EPlayerState.Idle];
     }
     /*{
@@ -268,6 +277,10 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
                 TransitionToState(EPlayerState.Dashing); 
                 return; 
             }
+            if (_context._buffer.CheckBackDash(flipped))
+            {
+                TransitionToState(EPlayerState.BackDashing);
+            }
         }
 
         // 2. Update visuals and state logic
@@ -293,5 +306,20 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
         }
         // 4. Sync Visuals
         playerGO.transform.position = new Vector3(_context.customRb.position.x, _context.customRb.position.y, 0);
+    }
+
+    void AssignOpponent()
+    {
+        Player[] allPlayers = FindObjectsOfType<Player>();
+
+        foreach (Player p in allPlayers)
+        {
+            if (p != this.player) 
+            {
+                this.opponent = p;
+                this.opponentTransform = p.transform;
+                break;
+            }
+        }
     }
 }

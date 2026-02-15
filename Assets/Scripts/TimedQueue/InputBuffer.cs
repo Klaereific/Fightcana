@@ -188,6 +188,9 @@ public class InputBuffer : MonoBehaviour
         input[0] = press;
         input[1] = hold;
         input[2] = rel;
+
+        // This means that I create an array of arrays where each index contains an array of three ele
+        // each element can be press, hold or release 
         buffer.Enqueue(input);
         if (press > 15)
         {
@@ -267,6 +270,35 @@ public class InputBuffer : MonoBehaviour
         }
         return false;
     }
+
+    public bool CheckBackDash(bool isFlipped)
+    {
+        byte[][] history = GetBufferArray();
+        int head = history.Length - 1;
+        byte backMask = InputButtons.GetBackMask(isFlipped);
+
+        if ((history[head][0] & backMask) == 0) return false;
+
+        bool foundGap = false;
+        for (int i = 1; i < 20; i++) 
+        {
+            int idx = head - i;
+            if (idx < 0) break;
+
+            byte combined = (byte)(history[idx][0] | history[idx][1]);
+
+            if ((combined & backMask) == 0) {
+                foundGap = true;
+            }
+
+            if (foundGap && (history[idx][0] & backMask) != 0) {
+                Debug.Log("<color=green>REAL BACK DASH MATCHED</color>");
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     public bool IsForwardPressed(byte pressByte, bool isFlipped) 
     {

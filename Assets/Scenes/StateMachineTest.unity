@@ -12929,6 +12929,7 @@ MonoBehaviour:
   _inputBuffer: {fileID: 1912703758}
   opponentTransform: {fileID: 1490718939}
   playerIndex: 1
+  opponent: {fileID: 0}
 --- !u!1 &1729478178
 GameObject:
   m_ObjectHideFlags: 0
@@ -13467,6 +13468,7 @@ MonoBehaviour:
   _inputBuffer: {fileID: 1490718942}
   opponentTransform: {fileID: 1912703762}
   playerIndex: 0
+  opponent: {fileID: 0}
 --- !u!4 &1979002665
 Transform:
   m_ObjectHideFlags: 0

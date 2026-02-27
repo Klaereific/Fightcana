@@ -137,7 +137,7 @@ public class InputBuffer : MonoBehaviour
 
         if(press != 0 || hold != 0)
         {
-            Debug.Log($"Buffer Tick: Press={press}, hold={hold}");
+            //Debug.Log($"Buffer Tick: Press={press}, hold={hold}");
         }
 
         buffer.Enqueue(input);
@@ -238,7 +238,7 @@ public class InputBuffer : MonoBehaviour
         //}
         if(move != Vector2.zero)
         {
-            Debug.Log($"Raw Move: {move} | resulting byte: {b}");
+            //Debug.Log($"Raw Move: {move} | resulting byte: {b}");
         }
         inputByte = b;
     }   

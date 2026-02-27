@@ -39,7 +39,7 @@ public class Player_Jump : PlayerState
     
         // 1. ACTIVE INPUT CHECK: Look at the buffer to "lock in" the jump direction
         byte[] currentFrame = Context._buffer.GetCurrentFrame();
-        byte input = (byte)(currentFrame[0] | currentFrame[1]); // Combine Press and Hold
+        byte input = (byte)(currentFrame[0] | currentFrame[1]); 
     
         bool isRight = (input & 0b00000010) != 0;
         bool isLeft  = (input & 0b00001000) != 0;
@@ -47,6 +47,11 @@ public class Player_Jump : PlayerState
         float jumpDirection = 0;
         if (isRight) jumpDirection = 1;
         else if (isLeft) jumpDirection = -1;
+
+        if (Context.HasAirDashed)
+        {
+            return;
+        }
     
         // 2. SET VELOCITY: Apply vertical force AND the angled jump force
         Context.customRb.velocity.y = Context._jumpForce;

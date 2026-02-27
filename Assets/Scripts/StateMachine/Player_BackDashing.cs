@@ -26,7 +26,7 @@ public class Player_BackDashing : PlayerState
     }
 
     private void ApplyVelocity() {
-        int dashDir = Context._player.rev ? 1 : -1;
+        float dashDir = -Context.FacingDirection;
         Context.customRb.velocity.x = dashDir * (Context._moveSpeed * 2.5f);
     }
 

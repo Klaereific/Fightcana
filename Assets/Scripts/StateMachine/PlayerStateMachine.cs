@@ -16,7 +16,8 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
         Hit,
         Knocked,
         Dashing,
-        BackDashing
+        BackDashing,
+        AirDashing
     }
 
     public enum Buttons
@@ -72,6 +73,10 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
     public Transform opponentTransform;
     public int playerIndex = 0;
 
+    // In PlayerStateMachine.cs class variables
+    [Header("Ground Check Settings")]
+    [SerializeField] private Transform groundCheck;
+    [SerializeField] private LayerMask groundLayer;
     public Player opponent; 
 
     public void Start()
@@ -121,7 +126,11 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
         _controls.Gameplay.Move.canceled += ctx => _rawMoveInput = Vector2.zero;
 
         _context = new PlayerStateContext(playerGO, this, moveSpeed, jumpForce, lowJumpMultiplier, fallMultiplier, angledJump, hitboxPrefab, rb_margin);
+        _context.groundCheck = this.groundCheck; 
+        _context.groundLayer = this.groundLayer;
         _context.animator = animator;
+
+        if (groundCheck == null) Debug.LogError("!!! GROUNDCHECK TRANSFORM IS MISSING IN INSPECTOR !!!");
         
         //_context.StartInputBuffer();
 
@@ -170,19 +179,21 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
     //}
 
     private void Update()
-{
-    // Log the raw input to see if the D-pad is actually sending numbers
-    if (_rawMoveInput != Vector2.zero) 
     {
-        //Debug.Log($"Movement Input Detected: {_rawMoveInput}");
-    }
+        _context.UpdateGroundCheck();
+        // Log the raw input to see if the D-pad is actually sending numbers
+        if (_rawMoveInput != Vector2.zero) 
+        {
+            //Debug.Log($"Movement Input Detected: {_rawMoveInput}");
+        }
 
-    if (_context._buffer != null)
-    {
-        _context._buffer.UpdateRawInput(_rawMoveInput);
-        _context._buffer_state = _context._buffer.GetBufferArray();
+        if (_context._buffer != null)
+        {
+            _context._buffer.UpdateRawInput(_rawMoveInput);
+            _context._buffer_state = _context._buffer.GetBufferArray();
+        }
+        DrawBox(_context.customRb.position, _context.customRb.size, Color.red);
     }
-}
 
     private void OnEnable() => _controls.Enable();
     private void OnDisable() => _controls.Disable();
@@ -199,6 +210,7 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
         States.Add(EPlayerState.Knocked, new Player_Knocked(_context, EPlayerState.Knocked));
         States.Add(EPlayerState.Dashing, new Player_Dashing(_context, EPlayerState.Dashing));
         States.Add(EPlayerState.BackDashing, new Player_BackDashing(_context, EPlayerState.BackDashing));
+        States.Add(EPlayerState.AirDashing, new Player_Air_Dashing(_context, EPlayerState.AirDashing));
         currentState = States[EPlayerState.Idle];
     }
     /*{
@@ -283,6 +295,19 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
             }
         }
 
+        if (_context._buffer.CheckDash(flipped) || _context._buffer.CheckBackDash(flipped))
+        {
+            if (_context.isGrounded)
+            {
+                Debug.Log("Dashing while on ground I guess");   
+            }
+            else if (!_context.HasAirDashed) 
+            {
+                _context.HasAirDashed = true;
+                TransitionToState(EPlayerState.AirDashing);
+            }
+        }
+
         // 2. Update visuals and state logic
         
         if(currentState.StateKey != EPlayerState.Dashing)
@@ -302,7 +327,7 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
         if (_context.customRb.position.y < -0.5f) 
         {
             _context.customRb.position.y = -0.5f;
-            _context.customRb.velocity.y = -0.5f; 
+            _context.customRb.velocity.y =  0f; 
         }
         // 4. Sync Visuals
         playerGO.transform.position = new Vector3(_context.customRb.position.x, _context.customRb.position.y, 0);
@@ -322,4 +347,15 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
             }
         }
     }
+    // Add this to PlayerStateMachine.cs
+    private void OnDrawGizmos()
+    {
+        if (groundCheck != null)
+        {
+            Gizmos.color = Color.red;
+            // Match the radius used in PlayerStateContext (0.2f)
+            Gizmos.DrawWireSphere(groundCheck.position, 0.2f);
+        }
+    }
+
 }

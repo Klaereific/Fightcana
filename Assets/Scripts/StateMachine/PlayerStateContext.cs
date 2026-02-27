@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -71,6 +72,8 @@ public class PlayerStateContext
     public bool _isBlocking = false;
     public Animator animator;
 
+    public bool HasAirDashed;
+
     public float FacingDirection => _player.rev ? -1f : 1f;
 
     public bool IsHoldingBack(byte holdByte)
@@ -84,15 +87,31 @@ public class PlayerStateContext
     // Ground checking method
     public void UpdateGroundCheck()
     {
+        bool previouslyGrounded = isGrounded;
+    
         if (groundCheck != null)
         {
-            isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+            Collider2D hit = Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
+            isGrounded = hit != null;
+            
+            // ONLY log when the state actually flips (Landing or Jumping)
+            if (isGrounded != previouslyGrounded)
+            {
+                if (isGrounded)
+                {
+                    Debug.Log($"<color=green>[LANDED]</color> on: {hit.gameObject.name}");
+                    HasAirDashed = false;
+                }
+                else Debug.Log("<color=yellow>[OFF GROUND]</color>");
+            }
         }
         else
         {
-            // Fallback: check if player is touching ground using custom rigidbody
-            isGrounded = customRb.velocity.y == 0 && customRb.position.y <= 0.1f;
+            // Fallback math
+            isGrounded = customRb.position.y <= -0.45f;
         }
+    
+        _movementState = isGrounded ? "Grounded" : "InAir";
     }
 
     public PlayerStateContext(GameObject playerGO, MonoBehaviour executor, float moveSpeed,float jumpForce,float lowJumpMultiplier, float fallMultiplier, float angledJump,GameObject hitboxPref,float rb_margins)
@@ -197,5 +216,4 @@ public class PlayerStateContext
         if (_player.rev) return left ? 6 : 4; // Flipped: Left is Forward
         return right ? 6 : 4; 
     }
-    
 }

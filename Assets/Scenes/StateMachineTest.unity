@@ -260,7 +260,7 @@ GameObject:
   - component: {fileID: 225598294}
   - component: {fileID: 225598293}
   - component: {fileID: 225598292}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -12165,7 +12165,7 @@ GameObject:
   - component: {fileID: 1581233209}
   - component: {fileID: 1581233208}
   - component: {fileID: 1581233207}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cube (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -12929,6 +12929,10 @@ MonoBehaviour:
   _inputBuffer: {fileID: 1912703758}
   opponentTransform: {fileID: 1490718939}
   playerIndex: 1
+  groundCheck: {fileID: 0}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 0
   opponent: {fileID: 0}
 --- !u!1 &1729478178
 GameObject:
@@ -13468,6 +13472,10 @@ MonoBehaviour:
   _inputBuffer: {fileID: 1490718942}
   opponentTransform: {fileID: 1912703762}
   playerIndex: 0
+  groundCheck: {fileID: 1428415564}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
   opponent: {fileID: 0}
 --- !u!4 &1979002665
 Transform:

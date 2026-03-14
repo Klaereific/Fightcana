@@ -12929,7 +12929,7 @@ MonoBehaviour:
   _inputBuffer: {fileID: 1912703758}
   opponentTransform: {fileID: 1490718939}
   playerIndex: 1
-  groundCheck: {fileID: 0}
+  groundCheck: {fileID: 1935033861}
   groundLayer:
     serializedVersion: 2
     m_Bits: 0

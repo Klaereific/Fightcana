@@ -17,7 +17,8 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
         Knocked,
         Dashing,
         BackDashing,
-        AirDashing
+        AirDashing,
+        AirBackDashing
     }
 
     public enum Buttons
@@ -211,6 +212,7 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
         States.Add(EPlayerState.Dashing, new Player_Dashing(_context, EPlayerState.Dashing));
         States.Add(EPlayerState.BackDashing, new Player_BackDashing(_context, EPlayerState.BackDashing));
         States.Add(EPlayerState.AirDashing, new Player_Air_Dashing(_context, EPlayerState.AirDashing));
+        States.Add(EPlayerState.AirBackDashing, new Player_Air_Back_Dashing(_context, EPlayerState.AirBackDashing));
         currentState = States[EPlayerState.Idle];
     }
     /*{
@@ -295,7 +297,9 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
             }
         }
 
-        if (_context._buffer.CheckDash(flipped) || _context._buffer.CheckBackDash(flipped))
+        
+
+        if (_context._buffer.CheckDash(flipped) ) //|| _context._buffer.CheckBackDash(flipped)
         {
             if (_context.isGrounded)
             {
@@ -305,6 +309,19 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
             {
                 _context.HasAirDashed = true;
                 TransitionToState(EPlayerState.AirDashing);
+            }
+        }
+
+        if (_context._buffer.CheckBackDash(flipped))
+        {
+            if (_context.isGrounded)
+            {
+                Debug.Log("Back Dashing while on ground I guess");   
+            }
+            else if (!_context.HasAirDashed) 
+            {
+                _context.HasAirDashed = true;
+                TransitionToState(EPlayerState.AirBackDashing);
             }
         }
 

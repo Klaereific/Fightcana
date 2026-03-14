@@ -37,7 +37,7 @@ public class Player_Jump : PlayerState
     
         startHeight = Context.customRb.position.y;
     
-        // 1. ACTIVE INPUT CHECK: Look at the buffer to "lock in" the jump direction
+        // ACTIVE INPUT CHECK: Look at the buffer to "lock in" the jump direction
         byte[] currentFrame = Context._buffer.GetCurrentFrame();
         byte input = (byte)(currentFrame[0] | currentFrame[1]); 
     
@@ -53,13 +53,13 @@ public class Player_Jump : PlayerState
             return;
         }
     
-        // 2. SET VELOCITY: Apply vertical force AND the angled jump force
+        // SET VELOCITY: Apply vertical force AND the angled jump force
         Context.customRb.velocity.y = Context._jumpForce;
         
         // We set velocity.x here and never change it in UpdateState to make it "committed"
         Context.customRb.velocity.x = jumpDirection * Context._angledJump;
     
-        // 3. ANIMATION: Use the jumpDirection we just calculated
+        // ANIMATION: Use the jumpDirection we just calculated
         if (jumpDirection != 0)
             Context.animator.SetInteger("Form", jumpDirection > 0 ? 2 : 3);
         else
@@ -107,17 +107,14 @@ public class Player_Jump : PlayerState
 
     public void Jump(float moveInput,PlayerStateContext context)
     {
-        //customRb.ApplyForce(new Vector2(0,jumpForce));
         if (Math.Abs(moveInput) < 0.01f)
         {
             context.customRb.velocity.y = context._jumpForce;
-            //context.jumpRequest = false;
         }
         else
         {
             context.customRb.velocity.y = context._jumpForce;
             context.customRb.velocity.x = moveInput * context._angledJump;
-            //jumpRequest = false;
         }
     }
 

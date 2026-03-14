@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -13,7 +14,11 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
         Attacking,
         Blocking,
         Hit,
-        Knocked
+        Knocked,
+        Dashing,
+        BackDashing,
+        AirDashing,
+        AirBackDashing
     }
 
     public enum Buttons
@@ -69,15 +74,25 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
     public Transform opponentTransform;
     public int playerIndex = 0;
 
+    // In PlayerStateMachine.cs class variables
+    [Header("Ground Check Settings")]
+    [SerializeField] private Transform groundCheck;
+    [SerializeField] private LayerMask groundLayer;
+    public Player opponent; 
+
+    public void Start()
+    {
+        AssignOpponent();
+    }
+
     void UpdateFacingDirection()
     {
-        // If your logic says "If moving left, flip" but doesn't allow 
-        // velocity to be applied while flipped, you'll get stuck.
-        if (_rawMoveInput.x > 0 && flipped) {
-            flipped = false;
-            // transform.Rotate(0, 180, 0); // Example flip
-        } else if (_rawMoveInput.x < 0 && !flipped) {
-            flipped = true;
+        if(currentState.StateKey == EPlayerState.Dashing) return;
+
+        if (transform.position.x < opponentTransform.position.x) {
+        flipped = false; // Opponent is to my right, so I face Right
+        } else {
+            flipped = true;  // Opponent is to my left, so I face Left
         }
     }
 
@@ -112,7 +127,11 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
         _controls.Gameplay.Move.canceled += ctx => _rawMoveInput = Vector2.zero;
 
         _context = new PlayerStateContext(playerGO, this, moveSpeed, jumpForce, lowJumpMultiplier, fallMultiplier, angledJump, hitboxPrefab, rb_margin);
+        _context.groundCheck = this.groundCheck; 
+        _context.groundLayer = this.groundLayer;
         _context.animator = animator;
+
+        if (groundCheck == null) Debug.LogError("!!! GROUNDCHECK TRANSFORM IS MISSING IN INSPECTOR !!!");
         
         //_context.StartInputBuffer();
 
@@ -161,19 +180,21 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
     //}
 
     private void Update()
-{
-    // Log the raw input to see if the D-pad is actually sending numbers
-    if (_rawMoveInput != Vector2.zero) 
     {
-        Debug.Log($"Movement Input Detected: {_rawMoveInput}");
-    }
+        _context.UpdateGroundCheck();
+        // Log the raw input to see if the D-pad is actually sending numbers
+        if (_rawMoveInput != Vector2.zero) 
+        {
+            //Debug.Log($"Movement Input Detected: {_rawMoveInput}");
+        }
 
-    if (_context._buffer != null)
-    {
-        _context._buffer.UpdateRawInput(_rawMoveInput);
-        _context._buffer_state = _context._buffer.GetBufferArray();
+        if (_context._buffer != null)
+        {
+            _context._buffer.UpdateRawInput(_rawMoveInput);
+            _context._buffer_state = _context._buffer.GetBufferArray();
+        }
+        DrawBox(_context.customRb.position, _context.customRb.size, Color.red);
     }
-}
 
     private void OnEnable() => _controls.Enable();
     private void OnDisable() => _controls.Disable();
@@ -188,6 +209,10 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
         States.Add(EPlayerState.Blocking, new Player_Blocking(_context, EPlayerState.Blocking));
         States.Add(EPlayerState.Hit, new Player_Hit(_context, EPlayerState.Hit));
         States.Add(EPlayerState.Knocked, new Player_Knocked(_context, EPlayerState.Knocked));
+        States.Add(EPlayerState.Dashing, new Player_Dashing(_context, EPlayerState.Dashing));
+        States.Add(EPlayerState.BackDashing, new Player_BackDashing(_context, EPlayerState.BackDashing));
+        States.Add(EPlayerState.AirDashing, new Player_Air_Dashing(_context, EPlayerState.AirDashing));
+        States.Add(EPlayerState.AirBackDashing, new Player_Air_Back_Dashing(_context, EPlayerState.AirBackDashing));
         currentState = States[EPlayerState.Idle];
     }
     /*{
@@ -254,8 +279,59 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
             _context._buffer.Tick();
         }
 
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            _context._buffer.DebugHistory(flipped);
+        }
+
+        if (currentState.StateKey == EPlayerState.Idle || currentState.StateKey == EPlayerState.Walk)
+        {
+            if (_context._buffer.CheckDash(flipped))
+            {
+                TransitionToState(EPlayerState.Dashing); 
+                return; 
+            }
+            if (_context._buffer.CheckBackDash(flipped))
+            {
+                TransitionToState(EPlayerState.BackDashing);
+            }
+        }
+
+        
+
+        if (_context._buffer.CheckDash(flipped) ) //|| _context._buffer.CheckBackDash(flipped)
+        {
+            if (_context.isGrounded)
+            {
+                Debug.Log("Dashing while on ground I guess");   
+            }
+            else if (!_context.HasAirDashed) 
+            {
+                _context.HasAirDashed = true;
+                TransitionToState(EPlayerState.AirDashing);
+            }
+        }
+
+        if (_context._buffer.CheckBackDash(flipped))
+        {
+            if (_context.isGrounded)
+            {
+                Debug.Log("Back Dashing while on ground I guess");   
+            }
+            else if (!_context.HasAirDashed) 
+            {
+                _context.HasAirDashed = true;
+                TransitionToState(EPlayerState.AirBackDashing);
+            }
+        }
+
         // 2. Update visuals and state logic
-        UpdateFacingDirection();
+        
+        if(currentState.StateKey != EPlayerState.Dashing)
+        {
+            UpdateFacingDirection();    
+        }
+        
 
         // base.FixedUpdate() runs currentState.UpdateState() 
         // This is where Player_Walk and Player_Idle now read the buffer!
@@ -268,9 +344,35 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
         if (_context.customRb.position.y < -0.5f) 
         {
             _context.customRb.position.y = -0.5f;
-            _context.customRb.velocity.y = -0.5f; 
+            _context.customRb.velocity.y =  0f; 
         }
         // 4. Sync Visuals
         playerGO.transform.position = new Vector3(_context.customRb.position.x, _context.customRb.position.y, 0);
     }
+
+    void AssignOpponent()
+    {
+        Player[] allPlayers = FindObjectsOfType<Player>();
+
+        foreach (Player p in allPlayers)
+        {
+            if (p != this.player) 
+            {
+                this.opponent = p;
+                this.opponentTransform = p.transform;
+                break;
+            }
+        }
+    }
+    // Add this to PlayerStateMachine.cs
+    private void OnDrawGizmos()
+    {
+        if (groundCheck != null)
+        {
+            Gizmos.color = Color.red;
+            // Match the radius used in PlayerStateContext (0.2f)
+            Gizmos.DrawWireSphere(groundCheck.position, 0.2f);
+        }
+    }
+
 }

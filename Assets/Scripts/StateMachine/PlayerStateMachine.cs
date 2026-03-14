@@ -332,7 +332,7 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
             UpdateFacingDirection();    
         }
         
-
+  
         // base.FixedUpdate() runs currentState.UpdateState() 
         // This is where Player_Walk and Player_Idle now read the buffer!
         base.FixedUpdate();

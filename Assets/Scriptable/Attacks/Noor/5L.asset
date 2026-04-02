@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d9de13489ee4194ea9e5a3e631f9cad, type: 3}
+  m_Name: 5L
+  m_EditorClassIdentifier: 
+  animationTrigger: 
+  animationForm: 0
+  startupFrames: 6
+  activeFrames: 4
+  recoveryFrames: 2
+  hitBoxOffset: {x: 10, y: 10}
+  hitBoxSize: {x: 10, y: 10}
+  damage: 5
+  hitStun: 5
+  blockStun: 5
+  hitForce: 5
+  blockForce: 5
+  inputSequence:
+  - dir: 5
+    button: 1
+  inputWindow: 15
+  inputTolerance: 2
+  cancelList: []
+  forwardImpulse: 0
+  jumpImpulse: 0

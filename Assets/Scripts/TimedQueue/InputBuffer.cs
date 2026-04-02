@@ -264,7 +264,7 @@ public class InputBuffer : MonoBehaviour
             }
 
             if (foundGap && (history[idx][0] & forwardMask) != 0) {
-                Debug.Log("<color=green>REAL DASH MATCHED</color>");
+                //Debug.Log("<color=green>REAL DASH MATCHED</color>");
                 return true;
             }
         }
@@ -292,7 +292,7 @@ public class InputBuffer : MonoBehaviour
             }
 
             if (foundGap && (history[idx][0] & backMask) != 0) {
-                Debug.Log("<color=green>REAL BACK DASH MATCHED</color>");
+                //Debug.Log("<color=green>REAL BACK DASH MATCHED</color>");
                 return true;
             }
         }

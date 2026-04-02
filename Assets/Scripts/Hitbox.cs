@@ -52,74 +52,107 @@ public class Hitbox : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Vector2 min = transform.position - transform.localScale / 2;
-        Vector2 max = transform.position + transform.localScale / 2;
-
-        Collider2D[] colliders = Physics2D.OverlapBoxAll(transform.position, transform.localScale, 0.0f);
-
-        foreach (var collider in colliders)
-        {
-            if (collider.CompareTag("Player"))
-            {
-                Player opponent = collider.gameObject.GetComponent<Player>();
-
-                // FIX 1A: Check if opponent exists AND opponent's transform is NOT the source transform
-                if (opponent != null && opponent.transform != sourceTransform) 
-                {
-                    if (hasHitPlayer) continue; 
-
-                    if (opponent.isBlocking)
-                    {
-                        opponent.GoIntoBlock(blockstun, blockForce);
-                    }
-                    else
-                    {
-                        opponent.TakeDamage(damage, hitstun, hitForce);
-                    }
-
-                    hasHitPlayer = true;
-                }
-            }
-            //if (hitstun != 0 && blockstun != 0 && !hasHitPlayer)
-            //{
-            //    DetectAndResolveCollisions();
-            //}
-        }
+        //Vector2 min = transform.position - transform.localScale / 2;
+        //Vector2 max = transform.position + transform.localScale / 2;
+        //
+        //Collider2D[] colliders = Physics2D.OverlapBoxAll(transform.position, transform.localScale, 0.0f);
+        //
+        //foreach (var collider in colliders)
+        //{
+        //    if (collider.CompareTag("Player"))
+        //    {
+        //        Player opponent = collider.gameObject.GetComponent<Player>();
+        //
+        //        // FIX 1A: Check if opponent exists AND opponent's transform is NOT the source transform
+        //        if (opponent != null && opponent.transform != sourceTransform) 
+        //        {
+        //            if (hasHitPlayer) continue; 
+        //
+        //            if (opponent.isBlocking)
+        //            {
+        //                opponent.GoIntoBlock(blockstun, blockForce);
+        //            }
+        //            else
+        //            {
+        //                opponent.TakeDamage(damage, hitstun, hitForce);
+        //            }
+        //
+        //            hasHitPlayer = true;
+        //        }
+        //    }
+        //    //if (hitstun != 0 && blockstun != 0 && !hasHitPlayer)
+        //    //{
+        //    //    DetectAndResolveCollisions();
+        //    //}
+        //}
     }
-    private void DetectAndResolveCollisions()
+
+    public void ResetHitbox()
     {
-        // Implement basic AABB collision detection and resolution with ground
+        hasHitPlayer = false;
+        gameObject.SetActive(false);
+    }
 
-        // Get the bounds of the player
-        Vector2 min = transform.position - transform.localScale / 2;
-        Vector2 max = transform.position + transform.localScale / 2;
+    public void CheckForHits()
+    {
+        if (hasHitPlayer) return; // Only one hit per swing!
 
-        // Check for collisions with ground objects
         Collider2D[] colliders = Physics2D.OverlapBoxAll(transform.position, transform.localScale, 0.0f);
-        //Debug.Log("Collision");
+        
         foreach (var collider in colliders)
         {
             if (collider.CompareTag("Player"))
             {
-                // Get bounds of the ground object
                 Player opponent = collider.gameObject.GetComponent<Player>();
 
-                if (opponent != null && opponent != sourceTransform)
+                // Ensure we aren't hitting ourselves
+                if (opponent != null && opponent.transform != sourceTransform)
                 {
                     if (opponent.isBlocking)
-                    {
                         opponent.GoIntoBlock(blockstun, blockForce);
-                        hasHitPlayer = true;
-                    }
                     else
-                    {
                         opponent.TakeDamage(damage, hitstun, hitForce);
-                        hasHitPlayer = true;
-                    }
+
+                    hasHitPlayer = true; // Mark as hit
                 }
             }
         }
     }
+
+    //private void DetectAndResolveCollisions()
+    //{
+    //    // Implement basic AABB collision detection and resolution with ground
+    //
+    //    // Get the bounds of the player
+    //    Vector2 min = transform.position - transform.localScale / 2;
+    //    Vector2 max = transform.position + transform.localScale / 2;
+    //
+    //    // Check for collisions with ground objects
+    //    Collider2D[] colliders = Physics2D.OverlapBoxAll(transform.position, transform.localScale, 0.0f);
+    //    //Debug.Log("Collision");
+    //    foreach (var collider in colliders)
+    //    {
+    //        if (collider.CompareTag("Player"))
+    //        {
+    //            // Get bounds of the ground object
+    //            Player opponent = collider.gameObject.GetComponent<Player>();
+    //
+    //            if (opponent != null && opponent != sourceTransform)
+    //            {
+    //                if (opponent.isBlocking)
+    //                {
+    //                    opponent.GoIntoBlock(blockstun, blockForce);
+    //                    hasHitPlayer = true;
+    //                }
+    //                else
+    //                {
+    //                    opponent.TakeDamage(damage, hitstun, hitForce);
+    //                    hasHitPlayer = true;
+    //                }
+    //            }
+    //        }
+    //    }
+    //}
     //private void OnDestroy()
 
     /* private void OnTriggerExit2D(Collider2D collision)

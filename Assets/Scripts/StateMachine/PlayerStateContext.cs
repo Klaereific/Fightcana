@@ -99,10 +99,10 @@ public class PlayerStateContext
             {
                 if (isGrounded)
                 {
-                    Debug.Log($"<color=green>[LANDED]</color> on: {hit.gameObject.name}");
+                    //Debug.Log($"<color=green>[LANDED]</color> on: {hit.gameObject.name}");
                     HasAirDashed = false;
                 }
-                else Debug.Log("<color=yellow>[OFF GROUND]</color>");
+                //else Debug.Log("<color=yellow>[OFF GROUND]</color>");
             }
         }
         else
@@ -184,7 +184,7 @@ public class PlayerStateContext
     public void OnButtonInput(object source, byte[][] buffer_state)
     {
         //Debug.Log("Button pressed");
-        isAttacking = true;
+        //isAttacking = true;
         _buffer_state = buffer_state;
     }
 

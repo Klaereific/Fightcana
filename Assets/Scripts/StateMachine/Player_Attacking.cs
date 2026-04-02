@@ -6,7 +6,6 @@ public class Player_Attacking : PlayerState
 {
     //PlayerStateMachine.EPlayerState nextStateKey; 
 
-
     Vector2 position;
     Vector2 size;
 
@@ -20,7 +19,7 @@ public class Player_Attacking : PlayerState
     float hitForce;
     float blockForce;
 
-    
+    private Attack activeAttack; 
 
     PlayerStateMachine.Buttons button;
 
@@ -41,28 +40,55 @@ public class Player_Attacking : PlayerState
         
         // Debug.Log("MonoBehaviour Enabled: " + Context._buffer.enabled);
         // Debug.Log(Context == null ? "Context is null" : "Context is not null");
-        Attack attack = EvaluateButtons1(Context._buffer_state);
 
+
+        activeAttack = EvaluateButtons1(Context._buffer_state);
+
+        if (activeAttack == null)
+        {
+            nextStateKey = PlayerStateMachine.EPlayerState.Idle;
+            return; 
+        }
+
+        nextStateKey = PlayerStateMachine.EPlayerState.Attacking;
+
+        Context._hitbox.ResetHitbox();
         Context.StopInputBuffer();
         Context.isAttacking = false;
         Context.ClearBufferState();
 
-        startup = attack._startup;
-        duration = attack._duration;
-        recovery = attack._recovery;
-        position = attack._position;
-        size = attack._size;
-        damage = attack._damage;
-        hitstun = attack._hitstun;
-        blockstun = attack._blockstun;
-        hitForce = attack._hitForce;
-        blockForce = attack._blockForce;
+        if(activeAttack != null)
+        {
+            Context._hitbox.ResetHitbox();
 
-        position = Context._player.rev ? new Vector2(attack._position.x * -1, attack._position.y) : attack._position; 
-        size = attack._size;
+            Context._hitbox.damage = activeAttack._damage;
+            Context._hitbox.blockForce = activeAttack._blockForce;
+            Context._hitbox.blockstun = activeAttack._blockstun;
+            Context._hitbox.hitstun = activeAttack._hitstun;
+            Context._hitbox.hitForce = activeAttack._hitForce;
 
-        Context.animator.SetInteger("State", (int)StateKey);
-        Context.animator.SetInteger("Form", attack._animationForm);
+            //startup = attack._startup;
+            //duration = attack._duration;
+            //recovery = attack._recovery;
+            //position = attack._position;
+            //size = attack._size;
+            //damage = attack._damage;
+            //hitstun = attack._hitstun;
+            //blockstun = attack._blockstun;
+            //hitForce = attack._hitForce;
+            //blockForce = attack._blockForce;
+
+
+        }
+        
+
+        //position = Context._player.rev ? new Vector2(attack._position.x * -1, attack._position.y) : attack._position; 
+        //size = attack._size;
+//
+        //Context.animator.SetInteger("State", (int)StateKey);
+        //Context.animator.SetInteger("Form", attack._animationForm);
+        Context.animator.Play("5L", 0, 0f);    
+        Debug.Log("Playing Animation: 5L");
     }
     public override void ExitState()
     {
@@ -72,38 +98,70 @@ public class Player_Attacking : PlayerState
     }
     public override void UpdateState()
     {
-        frame_count += 1;
-        if (Context._isHit)
+        //frame_count += 1;
+        //if (Context._isHit)
+        //{
+        //    nextStateKey = PlayerStateMachine.EPlayerState.Hit;
+        //}
+        //if (frame_count == 1) {
+        //    //Debug.Log("Startup");
+        //    //Debug.Log(frame_count);
+        //    PlayerStateMachine.SpawnHitbox(Context._hitboxPrefab, Context._player, (Vector2)Context.playerTransform.position + position, Context.playerTransform.rotation, size, 0, 0 ,0 ,0, 0, (float)startup / 60f, Color.blue);
+        //}
+        //if (frame_count == (startup + 1)) {
+        //    //Debug.Log("Attack");
+        //    //Debug.Log(frame_count);
+        //    PlayerStateMachine.SpawnHitbox(Context._hitboxPrefab, Context._player, (Vector2)Context.playerTransform.position + position, Context.playerTransform.rotation, size, damage, blockstun, hitstun, blockForce,hitForce, (float)duration / 60f, Color.red);
+        //}
+        //if (frame_count == (duration + startup + 1))
+        //{
+        //    //Debug.Log("Recovery");
+        //    //Debug.Log(frame_count);
+        //    PlayerStateMachine.SpawnHitbox(Context._hitboxPrefab, Context._player, (Vector2)Context.playerTransform.position + position, Context.playerTransform.rotation, size, 0, 0, 0, 0, 0, (float)recovery / 60f, Color.grey);
+        //}
+        //if(frame_count > (startup + duration + recovery))
+        //{
+        //    if (Context._movementState == "Crouching")
+        //    {
+        //        nextStateKey = PlayerStateMachine.EPlayerState.Duck;
+        //    }
+        //    else
+        //    {
+        //        nextStateKey = PlayerStateMachine.EPlayerState.Idle;
+        //    }
+        //    Context.isAttacking = false;
+        //}
+
+        frame_count++;
+
+        if (activeAttack == null) return;
+
+        // PHASE 1: STARTUP -> ACTIVE
+        // When we reach the startup frame, move and turn on the hitbox
+        if (frame_count == activeAttack._startup)
         {
-            nextStateKey = PlayerStateMachine.EPlayerState.Hit;
+            // Position the hitbox based on your Attack data
+            Context._hitbox.transform.localPosition = activeAttack._position;
+            Context._hitbox.transform.localScale = activeAttack._size;
+            Context._hitbox.gameObject.SetActive(true); 
         }
-        if (frame_count == 1) {
-            //Debug.Log("Startup");
-            //Debug.Log(frame_count);
-            PlayerStateMachine.SpawnHitbox(Context._hitboxPrefab, Context._player, (Vector2)Context.playerTransform.position + position, Context.playerTransform.rotation, size, 0, 0 ,0 ,0, 0, (float)startup / 60f, Color.blue);
-        }
-        if (frame_count == (startup + 1)) {
-            //Debug.Log("Attack");
-            //Debug.Log(frame_count);
-            PlayerStateMachine.SpawnHitbox(Context._hitboxPrefab, Context._player, (Vector2)Context.playerTransform.position + position, Context.playerTransform.rotation, size, damage, blockstun, hitstun, blockForce,hitForce, (float)duration / 60f, Color.red);
-        }
-        if (frame_count == (duration + startup + 1))
+
+        if (frame_count >= activeAttack._startup && frame_count < activeAttack._startup + activeAttack._duration)
         {
-            //Debug.Log("Recovery");
-            //Debug.Log(frame_count);
-            PlayerStateMachine.SpawnHitbox(Context._hitboxPrefab, Context._player, (Vector2)Context.playerTransform.position + position, Context.playerTransform.rotation, size, 0, 0, 0, 0, 0, (float)recovery / 60f, Color.grey);
+            Context._hitbox.CheckForHits(); 
         }
-        if(frame_count > (startup + duration + recovery))
+
+        // PHASE 2: ACTIVE -> RECOVERY
+        // When duration ends, turn off the hitbox
+        if (frame_count == activeAttack._startup + activeAttack._duration)
         {
-            if (Context._movementState == "Crouching")
-            {
-                nextStateKey = PlayerStateMachine.EPlayerState.Duck;
-            }
-            else
-            {
-                nextStateKey = PlayerStateMachine.EPlayerState.Idle;
-            }
-            Context.isAttacking = false;
+            Context._hitbox.gameObject.SetActive(false);
+        }
+
+        // PHASE 3: FINISH
+        if (frame_count >= activeAttack._total_duration)
+        {
+            nextStateKey = PlayerStateMachine.EPlayerState.Idle;
         }
     }
 
@@ -160,12 +218,12 @@ public class Player_Attacking : PlayerState
         else
         {
             Debug.Log("Undefined Attack");
-            return (new Attack());
+            return null;
         }
     }
     private Attack EvaluateButtons2(byte[][] buffer, Attack[] attackDict, int tail)
     {
-        //Debug.Log("EB2 called");
+        Debug.Log("EB2 called");
         foreach(Attack entry in attackDict)
         {
             Attack attack = entry;
@@ -221,7 +279,7 @@ public class Player_Attacking : PlayerState
         //Debug.Log("Empty path");
         //
         //return (new KeyValuePair<string,Attack> ("empty",new Attack(0, 1, new byte[1] { 0b00000000 }, new Vector2(0.5f, 0f), new Vector2(0.5f, 0.3f), 2f, 1, 1, 1)));
-        return (new Attack());
+        return null;
     }
     static byte SwitchBitsIfOneIsActive(byte value, int bit1, int bit2)
     {

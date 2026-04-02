@@ -332,7 +332,12 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
             UpdateFacingDirection();    
         }
         
-
+  
+        EPlayerState next = currentState.GetNextState();
+        if (!next.Equals(currentState.StateKey))
+        {
+            Debug.Log($"[DEBUG] State Machine transitioning from {currentState.StateKey} to {next}");
+        }
         // base.FixedUpdate() runs currentState.UpdateState() 
         // This is where Player_Walk and Player_Idle now read the buffer!
         base.FixedUpdate();

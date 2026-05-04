@@ -23,6 +23,7 @@ public class InputBuffer : MonoBehaviour
     // Start is called before the first frame update
 
     private float _lastInputTime;
+    private byte _pendingButtons;
 
     public void InitializeBuffer(int size, Player player)
     {
@@ -104,7 +105,8 @@ public class InputBuffer : MonoBehaviour
         // This is the logic previously handled by SFT()
         // It processes the current raw inputByte into the Press/Hold/Release format
         // and pushes it into the CircularBuffer.
-
+        byte currentInput = (byte)(inputByte | _pendingButtons);
+        _pendingButtons = 0;
         byte press = 0;
         byte hold = 0;
         byte rel = 0;
@@ -117,7 +119,7 @@ public class InputBuffer : MonoBehaviour
         {
             bool pp_bit = ((press_prev >> i) & 1) == 1;
             bool hp_bit = ((hold_prev >> i) & 1) == 1;
-            bool in_bit = ((inputByte >> i) & 1) == 1;
+            bool in_bit = ((currentInput >> i) & 1) == 1;
 
             if (in_bit)
             {
@@ -141,6 +143,11 @@ public class InputBuffer : MonoBehaviour
         }
 
         buffer.Enqueue(input);
+
+        if (inputByte > 15)
+        {
+            Debug.Log($"TICK sees button bits in inputByte: {inputByte}");
+        }
 
         // Trigger the attack event if a button (bits 4-7) was pressed
         if (press > 15)
@@ -218,7 +225,8 @@ public class InputBuffer : MonoBehaviour
 
     private Stopwatch _inputTimer = new Stopwatch();
     private long _lastProcessTick = 0;
-    public void UpdateRawInput(Vector2 move)
+
+    public void UpdateRawInput(Vector2 move, byte buttonBits)
     {
         float captureTime = Time.realtimeSinceStartup;
 
@@ -230,12 +238,9 @@ public class InputBuffer : MonoBehaviour
         if (move.x < -threshold) b = (byte)(b | InputButtons.LEFT);
         if (move.x > threshold)  b = (byte)(b | InputButtons.RIGHT);
 
-        //long currentTick = _inputTimer.ElapsedMilliseconds;
-        //long delta = currentTick - _lastProcessTick;
-        //if (b != 0) // Only log when you are actually pressing a direction
-        //{
-        //    UnityEngine.Debug.Log($"Input Received. Time since last process: {delta}ms | Raw: {move}");
-        //}
+        _pendingButtons |= buttonBits;  // accumulate, don't overwrite
+        inputByte = b;
+        
         if(move != Vector2.zero)
         {
             //Debug.Log($"Raw Move: {move} | resulting byte: {b}");

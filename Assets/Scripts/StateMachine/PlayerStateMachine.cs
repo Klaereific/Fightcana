@@ -70,6 +70,8 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
 
     public InputBuffer _inputBuffer;
 
+    private byte _attackBits;
+
     [Header("Local Multiplayer Settings")]
     public Transform opponentTransform;
     public int playerIndex = 0;
@@ -98,6 +100,8 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
 
     protected void Awake()
     {
+
+        InputSystem.settings.maxEventBytesPerUpdate = 0; 
         _controls = new PlayerControls();
 
         // 2. BIND TO SPECIFIC DEVICE
@@ -106,25 +110,30 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
         {
             // Bind to the specific gamepad
             _controls.devices = new[] { Gamepad.all[playerIndex] };
-            Debug.Log($"Player {playerIndex} bound to {Gamepad.all[playerIndex].name}");
+            //Debug.Log($"Player {playerIndex} bound to {Gamepad.all[playerIndex].name}");
         }
         else if (playerIndex == 0 && Keyboard.current != null)
         {
             // Only P1 gets keyboard fallback
             _controls.devices = new[] { Keyboard.current };
-            Debug.Log("Player 0 bound to Keyboard");
+            //Debug.Log("Player 0 bound to Keyboard");
         }
         else
         {
             // IMPORTANT: Bind to an empty array so they DON'T listen to P1's controller
             _controls.devices = new InputDevice[0]; 
-            Debug.Log($"Player {playerIndex} has no device and is disabled.");
+            //Debug.Log($"Player {playerIndex} has no device and is disabled.");
         }
 
         _controls.Enable();
 
         _controls.Gameplay.Move.performed += ctx => _rawMoveInput = ctx.ReadValue<Vector2>();
         _controls.Gameplay.Move.canceled += ctx => _rawMoveInput = Vector2.zero;
+
+        _controls.Gameplay.Light.performed  += ctx => { _attackBits |= InputButtons.LIGHT; Debug.Log($"LIGHT PERFORMED: _attackBits = {_attackBits}"); };
+        _controls.Gameplay.Medium.performed += ctx => { _attackBits |= InputButtons.MEDIUM; Debug.Log($"MEDIUM PERFORMED: _attackBits = {_attackBits}"); };
+        _controls.Gameplay.Heavy.performed  += ctx => { _attackBits |= InputButtons.HEAVY; Debug.Log($"HEAVY PERFORMED: _attackBits = {_attackBits}"); };
+    
 
         _context = new PlayerStateContext(playerGO, this, moveSpeed, jumpForce, lowJumpMultiplier, fallMultiplier, angledJump, hitboxPrefab, rb_margin);
         _context.groundCheck = this.groundCheck; 
@@ -190,9 +199,11 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
 
         if (_context._buffer != null)
         {
-            _context._buffer.UpdateRawInput(_rawMoveInput);
+            _context._buffer.UpdateRawInput(_rawMoveInput, _attackBits);
+            //_attackBits = 0;  // clear after handing off
             _context._buffer_state = _context._buffer.GetBufferArray();
         }
+
         DrawBox(_context.customRb.position, _context.customRb.size, Color.red);
     }
 
@@ -277,6 +288,7 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
         if (_context._buffer != null)
         {
             _context._buffer.Tick();
+            _attackBits = 0;
         }
 
         if (Input.GetKeyDown(KeyCode.Tab))
@@ -303,7 +315,7 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
         {
             if (_context.isGrounded)
             {
-                Debug.Log("Dashing while on ground I guess");   
+                //Debug.Log("Dashing while on ground I guess");   
             }
             else if (!_context.HasAirDashed) 
             {
@@ -316,7 +328,7 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
         {
             if (_context.isGrounded)
             {
-                Debug.Log("Back Dashing while on ground I guess");   
+                //Debug.Log("Back Dashing while on ground I guess");   
             }
             else if (!_context.HasAirDashed) 
             {

@@ -15,7 +15,7 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "LightAttack",
+                    "name": "Light",
                     "type": "Button",
                     "id": "c42b9a25-1346-49e6-ac1d-e3c0f7e8740a",
                     "expectedControlType": "Button",
@@ -24,7 +24,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "MediumAttack",
+                    "name": "Medium",
                     "type": "Button",
                     "id": "68643f77-fedb-4a2d-bfa9-14fa8b754dfa",
                     "expectedControlType": "Button",
@@ -33,7 +33,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "HeavyAttack",
+                    "name": "Heavy",
                     "type": "Button",
                     "id": "9c850f54-f2f3-47de-bfbb-e0b8575c7acf",
                     "expectedControlType": "Button",
@@ -42,7 +42,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "SpecialAttack",
+                    "name": "Special",
                     "type": "Button",
                     "id": "5526b069-e603-4f7f-8d05-7f676f3c9df6",
                     "expectedControlType": "Button",
@@ -136,7 +136,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "LightAttack",
+                    "action": "Light",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -147,7 +147,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "MediumAttack",
+                    "action": "Medium",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -158,7 +158,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "HeavyAttack",
+                    "action": "Heavy",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -169,7 +169,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "SpecialAttack",
+                    "action": "Special",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

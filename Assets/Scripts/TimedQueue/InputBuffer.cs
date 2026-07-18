@@ -24,6 +24,13 @@ public class InputBuffer : MonoBehaviour
 
     private float _lastInputTime;
 
+    private byte _pendingButton = 0;
+
+    public void AddButtonPress(byte buttonBit)
+    {
+        _pendingButton |= buttonBit;
+    }
+
     public void InitializeBuffer(int size, Player player)
     {
         _player = player;
@@ -137,10 +144,12 @@ public class InputBuffer : MonoBehaviour
 
         if(press != 0 || hold != 0)
         {
-            //Debug.Log($"Buffer Tick: Press={press}, hold={hold}");
+            Debug.Log($"Buffer Tick: Press={press}, hold={hold}");
         }
 
         buffer.Enqueue(input);
+
+        _pendingButton = 0; // Reset pending button after processing
 
         // Trigger the attack event if a button (bits 4-7) was pressed
         if (press > 15)
@@ -236,6 +245,9 @@ public class InputBuffer : MonoBehaviour
         //{
         //    UnityEngine.Debug.Log($"Input Received. Time since last process: {delta}ms | Raw: {move}");
         //}
+
+        b |= _pendingButton; 
+
         if(move != Vector2.zero)
         {
             //Debug.Log($"Raw Move: {move} | resulting byte: {b}");

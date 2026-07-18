@@ -27,6 +27,8 @@ public class Player_Idle : PlayerState
     }
     public override void UpdateState() {
 
+        //Debug.Log($"Idle.UpdateState running, isAttacking={Context.isAttacking}");
+
         byte[] currentFrame = Context._buffer.GetCurrentFrame();
         byte press = currentFrame[0];
         byte hold = currentFrame[1];

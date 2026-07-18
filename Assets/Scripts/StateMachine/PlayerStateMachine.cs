@@ -126,10 +126,18 @@ public class PlayerStateMachine : StateManager<PlayerStateMachine.EPlayerState>
         _controls.Gameplay.Move.performed += ctx => _rawMoveInput = ctx.ReadValue<Vector2>();
         _controls.Gameplay.Move.canceled += ctx => _rawMoveInput = Vector2.zero;
 
+
+
         _context = new PlayerStateContext(playerGO, this, moveSpeed, jumpForce, lowJumpMultiplier, fallMultiplier, angledJump, hitboxPrefab, rb_margin);
         _context.groundCheck = this.groundCheck; 
         _context.groundLayer = this.groundLayer;
         _context.animator = animator;
+
+        _controls.Gameplay.LightAttack.performed   += ctx => { Debug.Log("LightAttack fired!");   _context._buffer.AddButtonPress(InputButtons.LIGHT); };
+        _controls.Gameplay.MediumAttack.performed  += ctx => { Debug.Log("MediumAttack fired!");  _context._buffer.AddButtonPress(InputButtons.MEDIUM); };
+        _controls.Gameplay.HeavyAttack.performed   += ctx => { Debug.Log("HeavyAttack fired!");   _context._buffer.AddButtonPress(InputButtons.HEAVY); };
+        _controls.Gameplay.SpecialAttack.performed += ctx => { Debug.Log("SpecialAttack fired!"); _context._buffer.AddButtonPress(InputButtons.SPECIAL); };
+
 
         if (groundCheck == null) Debug.LogError("!!! GROUNDCHECK TRANSFORM IS MISSING IN INSPECTOR !!!");
         

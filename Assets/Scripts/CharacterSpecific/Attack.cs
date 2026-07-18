@@ -93,10 +93,10 @@ public class Attack
             else if (dir == 8) { dir_b = 0b00000100; } // up center
             else if (dir == 9) { dir_b = 0b00000110; } // up right
 
-            if (button == 1) { button_b = 0b10000000; } // light (west)
-            else if (button == 2) { button_b = 0b01000000; } // mid (north)
-            else if (button == 3) { button_b = 0b00100000; } // heavy (east)
-            else if (button == 4) { button_b = 0b00010000; } // special (south)
+            if (button == 1) { button_b = InputButtons.LIGHT; } // light (west)
+            else if (button == 2) { button_b = InputButtons.MEDIUM; } // mid (north)
+            else if (button == 3) { button_b = InputButtons.HEAVY; } // heavy (east)
+            else if (button == 4) { button_b = InputButtons.SPECIAL; } // special (south)
 
             output[i] = dir_b |= button_b;
             // Debug.Log(output[i]);
@@ -106,6 +106,7 @@ public class Attack
     public void Init()
     {
         _inputs = Translate(_input_vir);
+        _total_duration = _startup + _duration + _recovery;
     }
 
 }

@@ -145,7 +145,7 @@ public class PlayerStateContext
         _buffer.InitializeBuffer(40, _player);
 
         //_buffer.StartBuffer(_coroutineExecutor);
-        //_buffer.OnButtonInput += OnButtonInput; 
+        _buffer.OnButtonInput += OnButtonInput; 
 
         _hitbox = hitboxPref.GetComponent<Hitbox>();
         _player.OnHit += OnHit;                     // subscribes to event handler in player
@@ -183,8 +183,8 @@ public class PlayerStateContext
 
     public void OnButtonInput(object source, byte[][] buffer_state)
     {
-        //Debug.Log("Button pressed");
-        //isAttacking = true;
+        Debug.Log("OnButtonInput RECEIVED — isAttacking being set true"); 
+        isAttacking = true;
         _buffer_state = buffer_state;
     }
 

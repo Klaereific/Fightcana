@@ -40,9 +40,14 @@ public class Player_Attacking : PlayerState
         
         // Debug.Log("MonoBehaviour Enabled: " + Context._buffer.enabled);
         // Debug.Log(Context == null ? "Context is null" : "Context is not null");
+        Context.StopInputBuffer();
+        Context.isAttacking = false;
 
+        byte[][] bufferSnapshot = Context._buffer_state;
 
-        activeAttack = EvaluateButtons1(Context._buffer_state);
+        Context.ClearBufferState();
+
+        activeAttack = EvaluateButtons1(bufferSnapshot);
 
         if (activeAttack == null)
         {
@@ -53,10 +58,7 @@ public class Player_Attacking : PlayerState
         nextStateKey = PlayerStateMachine.EPlayerState.Attacking;
 
         Context._hitbox.ResetHitbox();
-        Context.StopInputBuffer();
-        Context.isAttacking = false;
-        Context.ClearBufferState();
-
+        
         if(activeAttack != null)
         {
             Context._hitbox.ResetHitbox();
@@ -87,8 +89,8 @@ public class Player_Attacking : PlayerState
 //
         //Context.animator.SetInteger("State", (int)StateKey);
         //Context.animator.SetInteger("Form", attack._animationForm);
-        Context.animator.Play("5L", 0, 0f);    
-        Debug.Log("Playing Animation: 5L");
+        Context.animator.Play(activeAttack._animationKey, 0, 0f);
+        Debug.Log($"Playing Animation: {activeAttack._animationKey}");
     }
     public override void ExitState()
     {
@@ -181,37 +183,66 @@ public class Player_Attacking : PlayerState
             //Debug.Log(b[0]);
         }
         int tail = bufferarray.GetLength(0) - 1;
+
+
+        const int buttonLookback = 5;
+        byte recentButtons = 0;
         //Debug.Log(bufferarray[tail][0]);
+
+        for (int i = tail; i > tail - buttonLookback && i >= 0; i--)
+        {
+            recentButtons |= (byte)(bufferarray[i][0] | bufferarray[i][1]); // press OR hold
+        }
 
         //if ((bufferarray[tail][0] & 0b10000000) != 0) { Debug.Log("Light"); }
         //else if ((bufferarray[tail][0] & 0b01000000) != 0) { Debug.Log("Mid"); }
         //else if ((bufferarray[tail][0] & 0b00100000) != 0) { Debug.Log("Heavy"); }
         //else if ((bufferarray[tail][0] & 0b00010000) != 0) { Debug.Log("Special"); }
 
-        if ((bufferarray[tail][0] & 0b10000000)!=0)
+        if ((recentButtons & InputButtons.LIGHT)!=0)
         {
             Attack attack = EvaluateButtons2(bufferarray, Context._p1_CP.gWest_attackDict, tail);
             Debug.Log("Light");
+            if (attack == null)
+            {
+                Debug.Log("Light pressed, but no matching attack pattern found.");
+                return null;
+            }
             Debug.Log(attack._name);
             return (attack);
         }
-        else if((bufferarray[tail][0] & 0b01000000)!= 0){
+        else if((recentButtons & InputButtons.MEDIUM)!= 0){
             Attack attack = EvaluateButtons2(bufferarray, Context._p1_CP.gNorth_attackDict, tail);
             Debug.Log("Mid");
+            if (attack == null)
+            {
+                Debug.Log("Mid pressed, but no matching attack pattern found.");
+                return null;
+            }
             Debug.Log(attack._name);
             return (attack);
         }
-        else if ((bufferarray[tail][0] & 0b00100000) != 0)
+        else if ((recentButtons & InputButtons.HEAVY) != 0)
         {
             Attack attack = EvaluateButtons2(bufferarray, Context._p1_CP.gEast_attackDict, tail);
             Debug.Log("Heavy");
+            if (attack == null)
+            {
+                Debug.Log("Heavy pressed, but no matching attack pattern found.");
+                return null;
+            }
             Debug.Log(attack._name);
             return (attack);
         }
-        else if ((bufferarray[tail][0] & 0b00010000) != 0)
+        else if ((recentButtons & InputButtons.SPECIAL) != 0)
         {
             Attack attack = EvaluateButtons2(bufferarray, Context._p1_CP.gSouth_attackDict, tail);
             Debug.Log("Special");
+            if (attack == null)
+            {
+                Debug.Log("Special pressed, but no matching attack pattern found.");
+                return null;
+            }
             Debug.Log(attack._name);
             return (attack);
         }

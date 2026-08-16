@@ -19,7 +19,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5287898052723513784
 Transform:
   m_ObjectHideFlags: 0
@@ -29,8 +29,8 @@ Transform:
   m_GameObject: {fileID: 3803666413519418204}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.78, y: 1.97, z: 0}
-  m_LocalScale: {x: 0.46241358, y: 0.46241358, z: 0.46241358}
+  m_LocalPosition: {x: 1, y: 1.25, z: 0}
+  m_LocalScale: {x: 1.2, y: 0.4, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -144,12 +144,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52e34b8c02bcd8c4196567cd539f1f8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 10
-  hitstun: 0
-  blockstun: 0
+  damage: 5
+  hitstun: 20
+  blockstun: 40
   hitForce: 0
   blockForce: 0
-  sourcePlayer: {fileID: 0}
+  sourceTransform: {fileID: 0}
 --- !u!50 &931535533605418732
 Rigidbody2D:
   serializedVersion: 4

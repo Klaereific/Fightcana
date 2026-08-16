@@ -12015,7 +12015,7 @@ MonoBehaviour:
       button: 1
     _total_duration: 0
   - _name: Jab
-    _animationKey: Jab
+    _animationKey: 5L
     _animationForm: 0
     _position: {x: 1, y: 1.25}
     _size: {x: 1.2, y: 0.4}
@@ -12035,7 +12035,7 @@ MonoBehaviour:
     _total_duration: 0
   gNorth_attackDict:
   - _name: StandingMid
-    _animationKey: Standing_Mid
+    _animationKey: 5M
     _animationForm: 1
     _position: {x: 1.2, y: 1.2}
     _size: {x: 1.2, y: 1.2}
